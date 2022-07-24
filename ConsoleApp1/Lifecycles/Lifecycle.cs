@@ -1,25 +1,21 @@
-﻿using musicParser.DTO;
+﻿using Microsoft.Extensions.Configuration;
+using musicParser.DTO;
 using musicParser.Processes.FilesProcess;
 using musicParser.Processes.InfoProcess;
 using musicParser.TagProcess;
 using musicParser.Utils.FileSystemUtils;
 using musicParser.Utils.Loggers;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
 using System.IO.Abstractions;
-using System.Linq;
 
 namespace musicParser.Processes
 {
     public class LifecycleProcess : ILifecycleProcess
     {
-        private readonly string ERROR_DIR = ConfigurationManager.AppSettings["error_dir"].ToString();
-        private readonly string MANUAL_FIX_DIR = ConfigurationManager.AppSettings["manual_fix_dir"].ToString();
-        private readonly string DONE_DIR = ConfigurationManager.AppSettings["done_dir"].ToString();
-        private readonly string TAG_DIR = ConfigurationManager.AppSettings["tag_fix_dir"].ToString();
-        private readonly string WORKING_DIR = ConfigurationManager.AppSettings["working_dir"].ToString();
+        private readonly string ERROR_DIR;
+        private readonly string MANUAL_FIX_DIR;
+        private readonly string DONE_DIR;
+        private readonly string TAG_DIR;
+        private readonly string WORKING_DIR;
 
         private readonly IParseFileProcess fileProcessor;
         private readonly IRenameFoldersProcess folderProcessor;
@@ -38,7 +34,8 @@ namespace musicParser.Processes
             IRenameFoldersProcess FolderProcessor,
             IParseFileProcess FileProcessor,
             INewAlbumsInfoProcess NewAlbumsProcessor,
-            IFileSystem FS)
+            IFileSystem FS,
+            IConfiguration config)
         {
             loggerInstance = logger;
             ConsoleLogger = consoleLogger;
@@ -48,6 +45,12 @@ namespace musicParser.Processes
             fileProcessor = FileProcessor;
             newAlbumsProcessor = NewAlbumsProcessor;
             fs = FS;
+
+            ERROR_DIR = config.GetValue<string>("error_dir");
+            MANUAL_FIX_DIR = config.GetValue<string>("manual_fix_dir");
+            DONE_DIR = config.GetValue<string>("done_dir");
+            TAG_DIR = config.GetValue<string>("tag_fix_dir");
+            WORKING_DIR = config.GetValue<string>("working_dir");
         }
 
         public void Execute(string folderToProcess, bool generateLogOnOK)

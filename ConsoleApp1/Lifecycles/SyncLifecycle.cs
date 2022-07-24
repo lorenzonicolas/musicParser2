@@ -1,6 +1,5 @@
 ﻿using musicParser.Processes.InfoProcess;
 using musicParser.Utils.Loggers;
-using System;
 using System.Diagnostics;
 
 namespace musicParser.Processes

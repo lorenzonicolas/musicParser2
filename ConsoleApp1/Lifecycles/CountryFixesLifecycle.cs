@@ -1,5 +1,4 @@
 ﻿using musicParser.Utils.Loggers;
-using System;
 
 namespace musicParser.Processes
 {
@@ -28,7 +27,7 @@ namespace musicParser.Processes
                 try
                 {
                     Console.WriteLine("Country metadata fix\n\n");
-                    countryFixProcessor.Execute(null);
+                    countryFixProcessor.Execute(string.Empty);
 
                     //TODO
                     //loggerInstance.ExportLogFile(folderToProcess);

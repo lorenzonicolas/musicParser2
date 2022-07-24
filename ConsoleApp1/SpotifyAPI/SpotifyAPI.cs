@@ -1,12 +1,8 @@
-﻿using musicParser.Spotify;
+﻿using Microsoft.Extensions.Configuration;
 using musicParser.Spotify.DTOs;
 using musicParser.Utils.Regex;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Net;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -21,14 +17,18 @@ namespace musicParser.Spotify
         private readonly string searchUrl = "https://api.spotify.com/v1/search?q={0}&type={1}";
         private readonly string bandByIDUrl = "https://api.spotify.com/v1/artists/{0}";
         private readonly string accessToken;
+        private readonly string clientId;
 
-        public SpotifyAPIimplemen(IRegexUtils regexUtils)
+        public SpotifyAPIimplemen(
+            IRegexUtils regexUtils,
+            IConfiguration config)
         {
             RegexUtils = regexUtils;
             client = new HttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
+            clientId = config.GetValue<string>("spotifyfClientID");
             accessToken = GetAccessToken();
         }
 
@@ -94,7 +94,7 @@ namespace musicParser.Spotify
             return loginResponse.AccessToken;
         }
 
-        private string CallerSync(string url, string operation, HttpContent content = null, bool isLogin = false)
+        private string CallerSync(string url, string operation, HttpContent? content = null, bool isLogin = false)
         {
             if (isLogin)
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", BuildBasicHeader());
@@ -124,7 +124,6 @@ namespace musicParser.Spotify
 
         private string BuildBasicHeader()
         {
-            var clientId = ConfigurationManager.AppSettings["spotifyfClientID"].ToString();
             var clientSecret = "af87ed2121bd4d58b9108f63e51c773f";
             var header = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{clientId}:{clientSecret}"));
             return header;
