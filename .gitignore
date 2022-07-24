@@ -43,3 +43,6 @@ packages/
 # Sublime Files Rules
 *.sublime-project
 *.sublime-workspace
+
+# coverlet output
+coverage.json
