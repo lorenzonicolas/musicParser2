@@ -1,9 +1,6 @@
-﻿using musicParser.Utils.FileSystemUtils;
+﻿using Microsoft.Extensions.Configuration;
+using musicParser.Utils.FileSystemUtils;
 using musicParser.Utils.Loggers;
-using System;
-using System.Configuration;
-using System.IO;
-using System.Linq;
 
 namespace musicParser.Processes
 {
@@ -14,18 +11,20 @@ namespace musicParser.Processes
         private readonly IFileSystemUtils FileSystemUtils;
         private readonly IExecutionLogger loggerInstance;
 
-        private readonly string DONE_DIR = ConfigurationManager.AppSettings["done_dir"].ToString();
+        private readonly string DONE_DIR;
 
         public TagFixesLifecycle(
             IExecutionLogger executionLogger,
             IProcess NewAlbumsProcessor,
             IProcess TagFixProcessor,
-            IFileSystemUtils fileSystemUtils)
+            IFileSystemUtils fileSystemUtils,
+            IConfiguration config)
         {
             loggerInstance = executionLogger;
             newAlbumsProcessor = NewAlbumsProcessor;
             tagFixProcessor = TagFixProcessor;
             FileSystemUtils = fileSystemUtils;
+            DONE_DIR = config.GetValue<string>("done_dir");
         }
 
         public void Execute(string folderToProcess, bool generateLogFile)

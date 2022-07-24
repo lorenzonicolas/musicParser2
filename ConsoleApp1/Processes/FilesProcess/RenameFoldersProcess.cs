@@ -1,13 +1,11 @@
-﻿using musicParser.DTO;
+﻿using Microsoft.Extensions.Configuration;
+using musicParser.DTO;
 using musicParser.MetalArchives;
 using musicParser.Spotify;
 using musicParser.TagProcess;
 using musicParser.Utils.FileSystemUtils;
 using musicParser.Utils.Loggers;
 using musicParser.Utils.Regex;
-using System;
-using System.Configuration;
-using System.IO;
 using System.IO.Abstractions;
 
 namespace musicParser.Processes.FilesProcess
@@ -15,8 +13,8 @@ namespace musicParser.Processes.FilesProcess
     public interface IRenameFoldersProcess : IProcess { }
     public class RenameFoldersProcess : IRenameFoldersProcess
     {
-        private readonly string MANUAL_FIX_DIR = ConfigurationManager.AppSettings["manual_fix_dir"].ToString();
-        private readonly string WORKING_DIR = ConfigurationManager.AppSettings["working_dir"].ToString();
+        private readonly string MANUAL_FIX_DIR;
+        private readonly string WORKING_DIR;
 
         private readonly IMetalArchivesService metalArchivesService;
         private readonly IExecutionLogger _logger;
@@ -35,7 +33,8 @@ namespace musicParser.Processes.FilesProcess
             IRegexUtils regexUtils,
             IConsoleLogger consoleLogger,
             ITagsUtils tagsUtils,
-            IFileSystem fs)
+            IFileSystem fs,
+            IConfiguration config)
         {
             metalArchivesService = maService;
             _logger = logger;
@@ -45,6 +44,9 @@ namespace musicParser.Processes.FilesProcess
             ConsoleLogger = consoleLogger;
             TagsUtils = tagsUtils;
             FS = fs;
+
+            MANUAL_FIX_DIR = config.GetValue<string>("manual_fix_dir");
+            WORKING_DIR = config.GetValue<string>("working_dir");
         }
 
         /// <summary>

@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using musicParser.GoogleDrive;
 using musicParser.Metadata;
 using musicParser.MetalArchives;
@@ -10,25 +12,25 @@ using musicParser.TagProcess;
 using musicParser.Utils.FileSystemUtils;
 using musicParser.Utils.Loggers;
 using musicParser.Utils.Regex;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.IO.Abstractions;
 
 namespace musicParser
 {
-    class Program
+    static class Program
     {
+        public static IConfigurationRoot Configuration { get; private set; }
+
         static void Main(string[] args)
         {
-            var folderToProcess = ConfigurationManager.AppSettings["folderToProcess"].ToString();
-            var folderToProcessTags = ConfigurationManager.AppSettings["tag_fix_dir"].ToString();
-            var generateLogOnOK = bool.Parse(ConfigurationManager.AppSettings["generateLogOnOK"]);
+            using IHost host = CreateHostBuilder(args).Build();
+
+            //await host.RunAsync();
+
+            var folderToProcess = Configuration.GetValue<string>("folderToProcess");
+            var folderToProcessTags = Configuration.GetValue<string>("tag_fix_dir");
+            var generateLogOnOK = Configuration.GetValue<bool>("generateLogOnOK");
 
             var arguments = new List<string>(args);
-
-            //setup our DI
-            ServiceProvider serviceProvider = BuildContainer();
 
             try
             {
@@ -46,45 +48,49 @@ namespace musicParser
                 }
                 else
                 {
-                    serviceProvider.GetService<ILifecycleProcess>().Execute(folderToProcess, generateLogOnOK);
+                    ActivatorUtilities.CreateInstance<LifecycleProcess>(host.Services).Execute(folderToProcess, generateLogOnOK);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Unhandled exception happened: {ex}");
-                Console.ReadLine();
                 throw;
             }
-
-            Console.WriteLine("Press any key to finish...");
-            Console.ReadLine();
         }
 
-        private static ServiceProvider BuildContainer()
-        {
-            var serviceProvider = new ServiceCollection()
-                            //.AddLogging()
-                            .AddSingleton<IConsoleLogger, ConsoleLogger>()
-                            .AddSingleton<IExecutionLogger, ExecutionLogger>()
-                            .AddSingleton<IRegexUtils, RegexUtils>()
-                            .AddSingleton<ITagsUtils, TagsUtils>()
-                            .AddSingleton<IFileSystem, FileSystem>()
-                            .AddSingleton<IFileSystemUtils, FileSystemUtils>()
-                            .AddSingleton<IMetadataService, MetadataService>()
-                            .AddSingleton<IMetalArchivesAPI, MetalArchivesAPI>()
-                            .AddSingleton<IMetalArchivesService, MetalArchivesService>()
-                            .AddSingleton<ISpotifyAPI, SpotifyAPIimplemen>()
-                            .AddSingleton<ISpotifyService, SpotifyService>()
-                            .AddSingleton<IGoogleDriveAPI, GoogleDriveAPI>()
-                            .AddSingleton<IGoogleDriveService, GoogleDriveService>()
-                            .AddSingleton<IInfoActions, InfoActions>()
-                            .AddSingleton<IParseFileProcess, ParseFileProcess>()
-                            .AddSingleton<IRenameFoldersProcess, RenameFoldersProcess>()
-                            .AddSingleton<INewAlbumsInfoProcess, NewAlbumsInfoProcess>()
-                            .AddSingleton<ITagProcess, TagsProcess>()
-                            .AddSingleton<ILifecycleProcess, LifecycleProcess>()
-                            .BuildServiceProvider();
-            return serviceProvider;
-        }
+        static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration((hostingContext, configuration) =>
+            {
+                configuration.Sources.Clear();
+                configuration
+                        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+                IConfigurationRoot configurationRoot = configuration.Build();
+                Configuration = configurationRoot;
+            })
+            .ConfigureServices((services) =>
+            {
+                services.AddHostedService<MusicParser.ConsoleService>();
+                services.AddSingleton<IConsoleLogger, ConsoleLogger>();
+                services.AddSingleton<IExecutionLogger, ExecutionLogger>();
+                services.AddSingleton<IRegexUtils, RegexUtils>();
+                services.AddSingleton<ITagsUtils, TagsUtils>();
+                services.AddSingleton<IFileSystem, FileSystem>();
+                services.AddSingleton<IFileSystemUtils, FileSystemUtils>();
+                services.AddSingleton<IMetadataService, MetadataService>();
+                services.AddSingleton<IMetalArchivesAPI, MetalArchivesAPI>();
+                services.AddSingleton<IMetalArchivesService, MetalArchivesService>();
+                services.AddSingleton<ISpotifyAPI, SpotifyAPIimplemen>();
+                services.AddSingleton<ISpotifyService, SpotifyService>();
+                services.AddSingleton<IGoogleDriveAPI, GoogleDriveAPI>();
+                services.AddSingleton<IGoogleDriveService, GoogleDriveService>();
+                services.AddSingleton<IInfoActions, InfoActions>();
+                services.AddSingleton<IParseFileProcess, ParseFileProcess>();
+                services.AddSingleton<IRenameFoldersProcess, RenameFoldersProcess>();
+                services.AddSingleton<INewAlbumsInfoProcess, NewAlbumsInfoProcess>();
+                services.AddSingleton<ITagProcess, TagsProcess>();
+                services.AddSingleton<ILifecycleProcess, LifecycleProcess>();
+            });
     }
 }

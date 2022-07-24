@@ -1,4 +1,5 @@
-﻿using musicParser.DTO;
+﻿using Microsoft.Extensions.Configuration;
+using musicParser.DTO;
 using musicParser.MetalArchives;
 using musicParser.Spotify;
 using musicParser.TagProcess;
@@ -23,7 +24,7 @@ namespace musicParser.Processes.FilesProcess
         private readonly IConsoleLogger ConsoleLogger;
         private readonly ITagsUtils TagsUtils;
         private readonly IFileSystem fs;
-        private readonly string MANUAL_FIX_DIR = ConfigurationManager.AppSettings["manual_fix_dir"].ToString();
+        private readonly string MANUAL_FIX_DIR;
 
         public ParseFileProcess(
             IMetalArchivesService service,
@@ -33,7 +34,8 @@ namespace musicParser.Processes.FilesProcess
             IRegexUtils regexUtils,
             IConsoleLogger consoleLogger,
             ITagsUtils tagsUtils,
-            IFileSystem FS)
+            IFileSystem FS,
+            IConfiguration config)
         {
             metalArchivesService = service;
             _logger = logger;
@@ -43,6 +45,8 @@ namespace musicParser.Processes.FilesProcess
             ConsoleLogger = consoleLogger;
             TagsUtils = tagsUtils;
             fs = FS;
+
+            MANUAL_FIX_DIR = config.GetValue<string>("manual_fix_dir");
         }
 
         /// <summary>
