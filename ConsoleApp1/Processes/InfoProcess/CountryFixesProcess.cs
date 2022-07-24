@@ -2,10 +2,6 @@
 using musicParser.GoogleDrive;
 using musicParser.Metadata;
 using musicParser.MetalArchives;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace musicParser.Processes.InfoProcess
 {
@@ -81,7 +77,9 @@ namespace musicParser.Processes.InfoProcess
                 switch (pressedKey)
                 {
                     case ConsoleKey.Y:
+#pragma warning disable CS8601 // Possible null reference assignment.
                         bandDto.Country = newCountryName;
+#pragma warning restore CS8601 // Possible null reference assignment.
                         break;
                     case ConsoleKey.C:
                         break;

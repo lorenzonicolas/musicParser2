@@ -93,7 +93,7 @@ namespace musicParser.Processes.FilesProcess
             {
                 Log($"RenameFolder Process Error. Folder: {folderToProcess} \nErr msg: {ex.Message}", LogType.Error);
                 _logger.LogError($"RenameFolder Process Error. Folder: {folderToProcess} \nErr msg: {ex.Message}");
-                throw ex;
+                throw;
             }
 
             return folderOutput;
@@ -128,7 +128,7 @@ namespace musicParser.Processes.FilesProcess
         /// <param name="folder"></param>
         /// <param name="parentBand"></param>
         /// <returns>The updated album path.</returns>
-        private string ProcessAlbum(IDirectoryInfo folder, string parentBand = null)
+        private string ProcessAlbum(IDirectoryInfo folder, string? parentBand = null)
         {
             var folderInfo = RegexUtils.GetFolderInformation(folder.Name);
 
@@ -207,7 +207,7 @@ namespace musicParser.Processes.FilesProcess
                 Log("\tFolder album name not found, will try to get from tags");
                 _logger.Log("\tFolder album name not found, will try to get from tags");
 
-                string album = TagsUtils.GetAlbumFromTag(folder, _logger);
+                string? album = TagsUtils.GetAlbumFromTag(folder, _logger);
                 if (!string.IsNullOrEmpty(album))
                 {
                     Log($"Retrieved Album from tag: {album}");
@@ -233,7 +233,7 @@ namespace musicParser.Processes.FilesProcess
         /// <param name="folderInfo"></param>
         /// <param name="parentBand"></param>
         /// <returns>True if the band name was found</returns>
-        private bool CheckBandName(IDirectoryInfo folder, string parentBand, FolderInfo folderInfo)
+        private bool CheckBandName(IDirectoryInfo folder, string? parentBand, FolderInfo folderInfo)
         {
             var found = true;
             if (string.IsNullOrEmpty(folderInfo.Band))
@@ -277,7 +277,12 @@ namespace musicParser.Processes.FilesProcess
         {
             var found = true;
 
-            if (folderInfo == null || string.IsNullOrEmpty(folderInfo.Year))
+            if (folderInfo == null)
+            {
+                folderInfo = new FolderInfo();
+            }
+
+            if (string.IsNullOrEmpty(folderInfo.Year))
             {
                 Log("\tFolder year not found, will try to get from tags");
                 _logger.Log("\tFolder year not found, will try to get from tags");
@@ -351,13 +356,13 @@ namespace musicParser.Processes.FilesProcess
 
                 return $"{folder.Parent.FullName}\\{expectedFormatFolderName}";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Log($"Something went terribly wrong trying to Rename Folder" +
                     $"\nFolder: {folder.FullName}\nFolderInfo: {folderInfo}", LogType.Error);
                 _logger.LogError($"Something went terribly wrong trying to Rename Folder" +
                     $"\nFolder: {folder.FullName}\nFolderInfo: {folderInfo}");
-                throw ex;
+                throw;
             }
         }
 

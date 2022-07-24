@@ -1,10 +1,7 @@
 ﻿using musicParser.DTO;
 using musicParser.Utils.Loggers;
 using musicParser.Utils.Regex;
-using System;
-using System.Collections.Generic;
 using System.IO.Abstractions;
-using System.Linq;
 
 namespace musicParser.Utils.FileSystemUtils
 {
@@ -51,12 +48,14 @@ namespace musicParser.Utils.FileSystemUtils
         /// </summary>
         /// <param name="cdFolder"></param>
         /// <returns></returns>
-        public IFileInfo GetAlbumCover(IDirectoryInfo cdFolder, IExecutionLogger logger)
+        public IFileInfo? GetAlbumCover(IDirectoryInfo cdFolder, IExecutionLogger logger)
         {
             try
             {
                 if (!IsAlbumFolder(cdFolder))
+                {
                     return null;
+                }
 
                 var folderImages = GetFolderImages(cdFolder);
 
@@ -69,8 +68,10 @@ namespace musicParser.Utils.FileSystemUtils
                 //Discard the system files (those albumart small shit)
                 folderImages = folderImages.Where(x => !x.Attributes.HasFlag(System.IO.FileAttributes.System)).ToArray();
 
-                if (folderImages.Count() == 1)
-                    return folderImages.FirstOrDefault();
+                if (folderImages.Length == 1)
+                {
+                    return folderImages.First();
+                }
             }
             catch (Exception ex)
             {
@@ -182,15 +183,16 @@ namespace musicParser.Utils.FileSystemUtils
             return false;
         }
 
-        public IFileInfo GetAnyFolderSong(IDirectoryInfo cdFolder)
+        public IFileInfo? GetAnyFolderSong(IDirectoryInfo cdFolder)
         {
             var folder = cdFolder;
 
             if(AlbumContainsCDFolders(cdFolder))
             {
-                folder = cdFolder.GetDirectories()
+                folder = cdFolder
+                    .GetDirectories()
                     .Where(x => x.Name.StartsWith("CD") || x.Name.StartsWith("Disc"))
-                    .FirstOrDefault();
+                    .First();
             }
 
             return folder.GetFiles()
@@ -245,21 +247,15 @@ namespace musicParser.Utils.FileSystemUtils
 
             if (file.IsReadOnly) return true;
 
-            System.IO.Stream stream = null;
-            
             try
             {
-                stream = FS.FileStream.Create(filename, System.IO.FileMode.Open, System.IO.FileAccess.ReadWrite, System.IO.FileShare.None);
+                using var stream2 = FS.FileStream.Create(filename, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
             }
             catch (Exception)
             {
                 return true;
             }
-            finally
-            {
-                if (stream != null)
-                    stream.Close();
-            }
+
             return false;
         }
 
@@ -268,12 +264,14 @@ namespace musicParser.Utils.FileSystemUtils
             var file = FS.FileInfo.FromFileName(filename);
 
             if (file.IsReadOnly)
+            {
                 file.IsReadOnly = false;
+            }
         }
 
-        public string GetAlbumFolderName(IFileInfo file)
+        public string? GetAlbumFolderName(IFileInfo file)
         {
-            string albumFolderName = null;
+            string? albumFolderName = null;
 
             // Use parent directory to get album name if it's an inner cd's folder
             if (AlbumContainsCDFolders(file.Directory.Parent))
@@ -285,7 +283,7 @@ namespace musicParser.Utils.FileSystemUtils
                 albumFolderName = file.Directory.Name;
             }
 
-            return RegexUtils.GetFolderInformation(albumFolderName).Album;
+            return albumFolderName != null ? RegexUtils.GetFolderInformation(albumFolderName).Album : null;
         }
 
         public FolderType GetFolderType(IDirectoryInfo folder)

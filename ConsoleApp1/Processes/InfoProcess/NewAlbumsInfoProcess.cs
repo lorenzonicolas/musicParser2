@@ -13,7 +13,7 @@
         public object Execute(string folderPath)
         {
             infoActions.Sync(folderPath, updateDeletes: false);
-            return null;
+            return string.Empty;
         }
     }
 }

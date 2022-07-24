@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
-namespace musicParser.GoogleDrive
+﻿namespace musicParser.GoogleDrive
 {
     public class GoogleDriveService : IGoogleDriveService
     {
@@ -30,7 +25,19 @@ namespace musicParser.GoogleDrive
             try
             {
                 var backupedFile = DownloadFile(BackupFilename);
-                return Newtonsoft.Json.JsonConvert.DeserializeObject<List<DTO.AlbumInfoBackupDto>>(backupedFile);
+                if (string.IsNullOrEmpty(backupedFile))
+                {
+                    throw new Exception("Invalid backup File");
+                }
+
+                var result = Newtonsoft.Json.JsonConvert.DeserializeObject<List<DTO.AlbumInfoBackupDto>>(backupedFile);
+
+                if (result == null)
+                {
+                    throw new Exception("Invalid metadata file");
+                }
+
+                return result;
             }
             catch (Exception ex)
             {
@@ -52,7 +59,19 @@ namespace musicParser.GoogleDrive
             try
             {
                 var metadataFile = DownloadFile(MetadataFilename);
-                return Newtonsoft.Json.JsonConvert.DeserializeObject<List<DTO.MetadataDto>>(metadataFile);
+                if(string.IsNullOrEmpty(metadataFile))
+                {
+                    throw new Exception("Invalid metadata File");
+                }
+
+                var result = Newtonsoft.Json.JsonConvert.DeserializeObject<List<DTO.MetadataDto>>(metadataFile);
+
+                if(result == null)
+                {
+                    throw new Exception("Invalid metadata file");
+                }
+
+                return result;
             }
             catch (Exception ex)
             {

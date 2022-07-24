@@ -125,7 +125,7 @@ namespace musicParser.Processes.FilesProcess
             {
                 Log($"ParseFiles Process Error. Folder: {cdFolder.FullName} \nErr msg: {ex.Message}", LogType.Error);
                 _logger.LogError($"ParseFiles Process Error. Folder: {cdFolder.FullName} \nErr msg: {ex.Message}");
-                throw ex;
+                throw;
             }
 
             return cdFolder.FullName;
@@ -244,7 +244,7 @@ namespace musicParser.Processes.FilesProcess
                 catch (RegexUtils.FileInfoException)
                 {
                     var message = $"Couldn't match any valid file name: {file.FullName}. Will try to get it from tags.";
-                    Log(message, LogType.Error);
+                    Log(message, LogType.Information);
                     _logger.Log(message);
 
                     var songInfo = TagsUtils.GetFileInformation(file);
