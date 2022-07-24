@@ -5,6 +5,8 @@ VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicParser", "ConsoleApp1\MusicParser.csproj", "{2A3D8545-CC0D-4C32-BC32-EBE4F657ABC9}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicParser.Tests", "MusicParser.Tests\MusicParser.Tests.csproj", "{E58B30E8-8FB3-405B-B3F7-AC2CE4EB6ECE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{2A3D8545-CC0D-4C32-BC32-EBE4F657ABC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A3D8545-CC0D-4C32-BC32-EBE4F657ABC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A3D8545-CC0D-4C32-BC32-EBE4F657ABC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E58B30E8-8FB3-405B-B3F7-AC2CE4EB6ECE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E58B30E8-8FB3-405B-B3F7-AC2CE4EB6ECE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E58B30E8-8FB3-405B-B3F7-AC2CE4EB6ECE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E58B30E8-8FB3-405B-B3F7-AC2CE4EB6ECE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
