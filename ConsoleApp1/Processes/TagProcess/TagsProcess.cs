@@ -218,52 +218,50 @@ namespace musicParser.TagProcess
                     //In case it's readonly
                     TagsUtils.UnlockFile(songFile.FullName);
 
-                    using (var tagFile = TagLib.File.Create(songFile.FullName))
+                    using var tagFile = TagLib.File.Create(songFile.FullName);
+                    var tags = tagFile.Tag;
+                    var info = RegexUtils.GetFileInformation(songFile.Name);
+
+                    // File individual actions
+                    var commentsAction = GetTrackCommentsAction(tags.Comment);
+                    var trackNumberAction = GetTrackNumberAction(tags.Track, Convert.ToInt32(info.TrackNumber));
+                    var trackTitleAction = GetTrackTitleAction(tags.Title, info.Title);
+                    // TODO
+                    //CheckTrackCover();
+
+                    // Album actions
+                    if (TagsUtils.NamesAreDifferent(tags.Album, albumInfo.Album))
                     {
-                        var tags = tagFile.Tag;
-                        var info = RegexUtils.GetFileInformation(songFile.Name);
-
-                        // File individual actions
-                        var commentsAction = GetTrackCommentsAction(tags.Comment);
-                        var trackNumberAction = GetTrackNumberAction(tags.Track, Convert.ToInt32(info.TrackNumber));
-                        var trackTitleAction = GetTrackTitleAction(tags.Title, info.Title);
-                        // TODO
-                        //CheckTrackCover();
-
-                        // Album actions
-                        if (TagsUtils.NamesAreDifferent(tags.Album, albumInfo.Album))
-                        {
-                            albumNamesFound.Add(tags.Album);
-                            albumNameAction = AlbumAction.UpdateFolder_Name;
-                        }
-
-                        var songGenreAction = TagAction.NoChanges;
-
-                        if (noGenreOnMetadata)
-                        {
-                            // No metadata genre for this band. Lets add all the genres found on the songs to later evaluate them all.
-                            genresFound.AddRange(tags.Genres);
-                        }
-                        else // This band exists on the metadata, auto-correct genre with it
-                        {
-                            songGenreAction = GetTrackGenreAction(tags.Genres, albumGenreFromMeta);
-                        }
-
-                        // First process the tag changes before renaming the file if needed
-                        var hasToSave = false;
-                        hasToSave |= ProcessTagAction(commentsAction, tags, info);
-                        hasToSave |= ProcessTagAction(trackNumberAction, tags, info);
-                        hasToSave |= ProcessTagAction(trackTitleAction, tags, info);
-                        hasToSave |= ProcessTagAction(songGenreAction, tags, info, albumInfo.Band, albumGenreFromMeta);
-
-                        if (hasToSave)
-                        {
-                            tagFile.Save();
-                        }
-
-                        //Check if a file rename is needed
-                        ProcessFileActions(trackNumberAction, trackTitleAction, tags, info, songFile);
+                        albumNamesFound.Add(tags.Album);
+                        albumNameAction = AlbumAction.UpdateFolder_Name;
                     }
+
+                    var songGenreAction = TagAction.NoChanges;
+
+                    if (noGenreOnMetadata)
+                    {
+                        // No metadata genre for this band. Lets add all the genres found on the songs to later evaluate them all.
+                        genresFound.AddRange(tags.Genres);
+                    }
+                    else // This band exists on the metadata, auto-correct genre with it
+                    {
+                        songGenreAction = GetTrackGenreAction(tags.Genres, albumGenreFromMeta);
+                    }
+
+                    // First process the tag changes before renaming the file if needed
+                    var hasToSave = false;
+                    hasToSave |= ProcessTagAction(commentsAction, tags, info);
+                    hasToSave |= ProcessTagAction(trackNumberAction, tags, info);
+                    hasToSave |= ProcessTagAction(trackTitleAction, tags, info);
+                    hasToSave |= ProcessTagAction(songGenreAction, tags, info, albumInfo.Band, albumGenreFromMeta);
+
+                    if (hasToSave)
+                    {
+                        tagFile.Save();
+                    }
+
+                    //Check if a file rename is needed
+                    ProcessFileActions(trackNumberAction, trackTitleAction, tags, info, songFile);
                 }
                 catch (Exception ex)
                 {

@@ -5,11 +5,8 @@ namespace musicParser.Processes.InfoProcess
     // TODO
     public class FullLibraryInfoProcess: IProcess
     {
-        private readonly IFileSystemUtils FileSystemUtils;
-
-        public FullLibraryInfoProcess(IFileSystemUtils fileSystemUtils)
+        public FullLibraryInfoProcess()
         {
-            FileSystemUtils = fileSystemUtils;
         }
 
         public object Execute(string folderToProcess)
