@@ -32,7 +32,7 @@ namespace musicParser.Spotify
             accessToken = GetAccessToken();
         }
 
-        public SearchBandResponse SearchBand(string bandName)
+        public SearchBandResponse? SearchBand(string bandName)
         {
             bandName = RegexUtils.ReplaceAllSpaces(bandName);
 
@@ -42,7 +42,7 @@ namespace musicParser.Spotify
             return JsonConvert.DeserializeObject<SearchBandResponse>(result);
         }
 
-        public SearchBandResponse SearchBand(string bandName, string genre)
+        public SearchBandResponse? SearchBand(string bandName, string genre)
         {
             bandName = RegexUtils.ReplaceAllSpaces(bandName);
             genre = RegexUtils.ReplaceAllSpaces(genre);
@@ -54,7 +54,7 @@ namespace musicParser.Spotify
             return JsonConvert.DeserializeObject<SearchBandResponse>(result);
         }
 
-        public BandDTO SearchBandById(string id)
+        public BandDTO? SearchBandById(string id)
         {
             var url = string.Format(bandByIDUrl, id);
 
@@ -62,7 +62,7 @@ namespace musicParser.Spotify
             return JsonConvert.DeserializeObject<BandDTO>(result);
         }
 
-        public SearchAlbumResponse SearchAlbum(string albumName)
+        public SearchAlbumResponse? SearchAlbum(string albumName)
         {
             albumName = RegexUtils.ReplaceAllSpaces(albumName);
 
@@ -72,7 +72,7 @@ namespace musicParser.Spotify
             return JsonConvert.DeserializeObject<SearchAlbumResponse>(result);
         }
 
-        public SearchAlbumResponse SearchAlbum(string albumName, string bandName)
+        public SearchAlbumResponse? SearchAlbum(string albumName, string bandName)
         {
             albumName = RegexUtils.ReplaceAllSpaces(albumName);
             bandName = RegexUtils.ReplaceAllSpaces(bandName);
@@ -91,13 +91,20 @@ namespace musicParser.Spotify
             var response = CallerSync(loginUrl, WebRequestMethods.Http.Post, new FormUrlEncodedContent(data), isLogin:true);
             var loginResponse = JsonConvert.DeserializeObject<LoginDTO>(response);
 
+            if(loginResponse == null)
+            {
+                throw new Exception("Error getting the access token");
+            }
+
             return loginResponse.AccessToken;
         }
 
         private string CallerSync(string url, string operation, HttpContent? content = null, bool isLogin = false)
         {
             if (isLogin)
+            {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", BuildBasicHeader());
+            }
             else
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
@@ -106,20 +113,31 @@ namespace musicParser.Spotify
             HttpResponseMessage response;
 
             if (operation == WebRequestMethods.Http.Get)
+            {
                 response = client.GetAsync(url).Result;
+            }
             else if (operation == WebRequestMethods.Http.Post)
+            {
                 response = client.PostAsync(url, content).Result;
+            }
             else
+            {
                 throw new Exception("Invalid caller operation");
+            }
 
             if (response.IsSuccessStatusCode)
             {
-                if (isLogin) client.DefaultRequestHeaders.Remove("Authorization");
+                if (isLogin)
+                {
+                    client.DefaultRequestHeaders.Remove("Authorization");
+                }
 
                 return response.Content.ReadAsStringAsync().Result;
             }
             else
+            {
                 throw new Exception("Communication error");
+            }
         }
 
         private string BuildBasicHeader()

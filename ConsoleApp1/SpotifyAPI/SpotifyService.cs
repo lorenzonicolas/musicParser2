@@ -1,8 +1,5 @@
 ﻿using musicParser.Spotify.DTOs;
 using musicParser.Utils.Loggers;
-using System;
-using System.Collections.Generic;
-using System.Net;
 
 namespace musicParser.Spotify
 {
@@ -17,15 +14,15 @@ namespace musicParser.Spotify
             api = spotifyAPI;
         }
 
-        public List<string> GetArtistGenre(string bandName)
+        public List<string>? GetArtistGenre(string bandName)
         {
             try
             {
                 var searchResult = api.SearchBand(bandName);
 
-                if (searchResult.Artists.Total == 1)
+                if (searchResult?.Artists?.Total == 1)
                 {
-                    return searchResult.Artists.Items[0].Genres;
+                    return searchResult.Artists.Items[0]?.Genres;
                 }
 
                 return null;
@@ -58,7 +55,7 @@ namespace musicParser.Spotify
         //    }
         //}
 
-        public List<string> GetArtistGenreUsingAlbum(string bandName, string album)
+        public List<string>? GetArtistGenreUsingAlbum(string bandName, string album)
         {
             try
             {
@@ -67,8 +64,10 @@ namespace musicParser.Spotify
                 var albumInfo = GetAlbum(album, bandName);
 
                 if (albumInfo == null || albumInfo.Artists.Count != 1)
-                    //Didn't work. Lets at least try to get the genre using only the band name
+                //Didn't work. Lets at least try to get the genre using only the band name
+                {
                     return GetArtistGenre(bandName);
+                }
                 else
                 {
                     var bandRetrieved = GetBandById(albumInfo.Artists[0].Id);
@@ -83,7 +82,7 @@ namespace musicParser.Spotify
             }
         }
 
-        public string GetAlbumYear(string albumName, string bandName)
+        public string? GetAlbumYear(string albumName, string bandName)
         {
             try
             {
@@ -100,7 +99,7 @@ namespace musicParser.Spotify
             }
         }
 
-        public byte[] DownloadAlbumCover(string band, string albumToSearch)
+        public byte[]? DownloadAlbumCover(string band, string albumToSearch)
         {
             try
             {
@@ -117,11 +116,8 @@ namespace musicParser.Spotify
                     return null;
                 }
 
-                using (WebClient webClient = new WebClient())
-                {
-                    byte[] data = webClient.DownloadData(new Uri(url));
-                    return data;
-                }
+                using HttpClient webClient = new();
+                return webClient.GetByteArrayAsync(new Uri(url)).Result;
             }
             catch (Exception ex)
             {
@@ -130,11 +126,11 @@ namespace musicParser.Spotify
             }
         }
 
-        private AlbumDTO GetAlbum(string albumName, string bandName)
+        private AlbumDTO? GetAlbum(string albumName, string bandName)
         {
             var searchResult = api.SearchAlbum(albumName, bandName);
 
-            if (searchResult.Albums.Total == 1)
+            if (searchResult?.Albums.Total == 1)
             {
                 return searchResult.Albums.Items[0];
             }
@@ -142,28 +138,30 @@ namespace musicParser.Spotify
             return null;
         }
 
-        private BandDTO GetBandById(string bandId)
+        private BandDTO? GetBandById(string bandId)
         {
             return api.SearchBandById(bandId);
         }
 
-        private void ClearAlbumString(string album)
+        private static void ClearAlbumString(string album)
         {
-            Clear(album, "Album");
-            Clear(album, "EP");
-            Clear(album, "Live");
-            Clear(album, "Compilation");
+            album
+                .Clear("Album")
+                .Clear("EP")
+                .Clear("Live")
+                .Clear("Compilation");
         }
+    }
 
-        private void Clear(string album, string key)
+    static class Extensions
+    {
+        public static string Clear(this string album, string key)
         {
-            var keys = new List<string>() { "" };
-
             var strToReplace = $"({key})";
             var str2ToReplace = $"[{key}]";
 
-            album.Replace(strToReplace, string.Empty);
-            album.Replace(str2ToReplace, string.Empty);
+            return album.Replace(strToReplace, string.Empty).Replace(str2ToReplace, string.Empty);
         }
     }
 }
+

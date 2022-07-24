@@ -283,6 +283,7 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
                 .Returns(new FolderInfo() { Album = "test"});
 
             var songFile = utils.GetAnyFolderSong(folderToUse);
+            Assert.That(songFile, Is.Not.Null);
             var result = utils.GetAlbumFolderName(songFile);
 
             Assert.That(result, Is.EqualTo("test"));
@@ -433,9 +434,14 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             return BuildDirectory(mockExplanation);
         }
 
-        private Mock<IDirectoryInfo> BuildDirectory(MockFolder info, IDirectoryInfo? parentFolder = null)
+        private Mock<IDirectoryInfo> BuildDirectory(MockFolder? info, IDirectoryInfo? parentFolder = null)
         {
             var directory = new Mock<IDirectoryInfo>();
+
+            if(info == null)
+            {
+                return directory;
+            }
 
             directory.Setup(x => x.Exists).Returns(true);
             directory.Setup(x => x.Name).Returns(info.FolderName);

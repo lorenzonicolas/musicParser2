@@ -6,11 +6,7 @@ using musicParser.Spotify;
 using musicParser.Utils.FileSystemUtils;
 using musicParser.Utils.Loggers;
 using musicParser.Utils.Regex;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.IO.Abstractions;
-using System.Linq;
 
 namespace musicParser.TagProcess
 {
@@ -59,7 +55,7 @@ namespace musicParser.TagProcess
                 ProcessAsArtistFolder(folder);
             }
 
-            return null;
+            return string.Empty;
         }
 
         private void ProcessAsArtistFolder(IDirectoryInfo artistFolder)
@@ -70,7 +66,7 @@ namespace musicParser.TagProcess
             }
         }
 
-        private void ProcessAsAlbumFolder(IDirectoryInfo album, string overrideBandName = null)
+        private void ProcessAsAlbumFolder(IDirectoryInfo album, string? overrideBandName = null)
         {
             try
             {
@@ -125,7 +121,7 @@ namespace musicParser.TagProcess
             OverrideGenreTag(folder, genreDecided);
         }
 
-        private void OverrideGenreTag(IDirectoryInfo folder, string genreDecided)
+        private void OverrideGenreTag(IDirectoryInfo folder, string? genreDecided)
         {
             foreach (var songFile in FileSystemUtils.GetFolderSongs(folder))
             {
@@ -133,17 +129,15 @@ namespace musicParser.TagProcess
                 {
                     //In case it's readonly
                     TagsUtils.UnlockFile(songFile.FullName);
-                    using (var tagFile = TagLib.File.Create(songFile.FullName))
-                    {
-                        tagFile.Tag.Genres = new string[] { genreDecided };
-                        tagFile.Save();
-                    }
+                    using var tagFile = TagLib.File.Create(songFile.FullName);
+                    tagFile.Tag.Genres = new string[] { genreDecided };
+                    tagFile.Save();
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Error on tag processing file: {songFile.FullName} - Err msg: {ex.Message}");
                     _logger.LogError($"Error on tag processing file: {songFile.FullName} - Err msg: {ex.Message}");
-                    throw ex;
+                    throw;
                 }
             }
 
@@ -162,27 +156,25 @@ namespace musicParser.TagProcess
                     //In case it's readonly
                     TagsUtils.UnlockFile(songFile.FullName);
 
-                    using (var tagFile = TagLib.File.Create(songFile.FullName))
+                    using var tagFile = TagLib.File.Create(songFile.FullName);
+                    if (noGenreOnMetadata)
                     {
-                        if (noGenreOnMetadata)
-                        {
-                            // No metadata genre for this band. Lets add all the genres found on the songs to later evaluate them all.
-                            genresFound.AddRange(tagFile.Tag.Genres);
-                        }
+                        // No metadata genre for this band. Lets add all the genres found on the songs to later evaluate them all.
+                        genresFound.AddRange(tagFile.Tag.Genres);
                     }
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Error on tag processing file: {songFile.FullName} - Err msg: {ex.Message}");
                     _logger.LogError($"Error on tag processing file: {songFile.FullName} - Err msg: {ex.Message}");
-                    throw ex;
+                    throw;
                 }
             }
 
             return genresFound.Distinct().ToList();
         }
 
-        private string DecideGenre(IDirectoryInfo folder, FolderInfo albumInfo, IList<string> genresFound)
+        private string? DecideGenre(IDirectoryInfo folder, FolderInfo albumInfo, IList<string> genresFound)
         {
             Console.WriteLine($"Let's fix {albumInfo.Band} - {albumInfo.Album}");
 
@@ -199,7 +191,10 @@ namespace musicParser.TagProcess
 
             if (canAutosolve)
             {
-                Console.WriteLine($"Same genre in tags ({genresFound.First()}) than MetalArchives ({genreFromMetalArchives}). Autosolved it!");
+                Console.WriteLine($"Same genre in tags ({genresFound.First()}) " +
+                    $"than MetalArchives ({genreFromMetalArchives})." +
+                    $"Autosolved it!");
+
                 return genreFromMetalArchives;
             }
 
@@ -227,7 +222,7 @@ namespace musicParser.TagProcess
             return genreConfirmed;
         }
 
-        private static void PrintDecideGenreMessage(IDirectoryInfo folder, IList<string> genresFound, string genreFromMetalArchives, IList<string> genreFromSpotify)
+        private static void PrintDecideGenreMessage(IDirectoryInfo folder, IList<string> genresFound, string genreFromMetalArchives, IList<string>? genreFromSpotify)
         {
             var manyGenresFound = genresFound.Count > 1;
             var noGenreFound = genresFound.Count < 1 || (genresFound.Count == 1 && (string.IsNullOrEmpty(genresFound[0]) || genresFound[0] == " "));

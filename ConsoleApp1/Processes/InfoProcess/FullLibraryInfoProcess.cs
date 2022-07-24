@@ -1,5 +1,4 @@
 ﻿using musicParser.Utils.FileSystemUtils;
-using System;
 
 namespace musicParser.Processes.InfoProcess
 {
@@ -27,7 +26,9 @@ namespace musicParser.Processes.InfoProcess
             //printInformation(fullRows);
 
             Console.WriteLine("\nDone! Press any key...\n");
-            return Console.ReadLine();
+            Console.ReadLine();
+
+            return string.Empty;
         }
     }
 }
