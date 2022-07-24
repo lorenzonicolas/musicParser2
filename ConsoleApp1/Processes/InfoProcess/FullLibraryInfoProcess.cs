@@ -1,16 +1,12 @@
 ﻿using musicParser.Utils.FileSystemUtils;
-using System;
 
 namespace musicParser.Processes.InfoProcess
 {
     // TODO
     public class FullLibraryInfoProcess: IProcess
     {
-        private readonly IFileSystemUtils FileSystemUtils;
-
-        public FullLibraryInfoProcess(IFileSystemUtils fileSystemUtils)
+        public FullLibraryInfoProcess()
         {
-            FileSystemUtils = fileSystemUtils;
         }
 
         public object Execute(string folderToProcess)
@@ -27,7 +23,9 @@ namespace musicParser.Processes.InfoProcess
             //printInformation(fullRows);
 
             Console.WriteLine("\nDone! Press any key...\n");
-            return Console.ReadLine();
+            Console.ReadLine();
+
+            return string.Empty;
         }
     }
 }

@@ -34,7 +34,7 @@ namespace musicParser.TagProcess
             _logger.Log($"Renamed song file: {correctFileFormat}");
         }
 
-        private bool ProcessTagAction(TagAction action, Tag tags, SongInfo info, string band = null, string metaGenre = null)
+        private bool ProcessTagAction(TagAction action, Tag tags, SongInfo info, string? band = null, string? metaGenre = null)
         {
             var tagSaveIsNeeded = false;
 
@@ -74,7 +74,7 @@ namespace musicParser.TagProcess
             return tagSaveIsNeeded;
         }
 
-        private TagAction GetTrackNumberAction(uint tagTrack, int fileTrack)
+        private static TagAction GetTrackNumberAction(uint tagTrack, int fileTrack)
         {
             var action = TagAction.NoChanges;
             var tagTrackEmpty = string.IsNullOrEmpty(tagTrack.ToString()) || tagTrack == 0;

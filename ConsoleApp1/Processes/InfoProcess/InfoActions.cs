@@ -233,7 +233,10 @@ namespace musicParser.Processes.InfoProcess
         private bool CheckOutdatedAlbums(List<AlbumInfoOnDisk> allAlbums)
         {
             var updateNeeded = false;
-            var outOfDateAlbums = allAlbums.Where(x => backupedData.Exists(m => m.AlbumName == x.AlbumName && m.DateBackup < x.LastTimeWrite)).ToList();
+            var outOfDateAlbums = allAlbums
+                .Where(x => backupedData
+                    .Exists(m => m.AlbumName == x.AlbumName && m.DateBackup < x.LastTimeWrite))
+                .ToList();
 
             if (outOfDateAlbums.Count > 0)
             {
@@ -242,8 +245,12 @@ namespace musicParser.Processes.InfoProcess
                 foreach (var outdated in outOfDateAlbums)
                 {
                     var index = backupedData.FindIndex(x => x.AlbumName == outdated.AlbumName);
-
                     var albumInDisk = allAlbums.Find(x => x.AlbumName == outdated.AlbumName);
+
+                    if(index == -1 || albumInDisk == null)
+                    {
+                        throw new Exception("Error trying to update the album");
+                    }
 
                     backupedData[index].Type = FileSystemUtils.GetAlbumType(albumInDisk.Name);
                     backupedData[index].DateBackup = DateTime.Now;

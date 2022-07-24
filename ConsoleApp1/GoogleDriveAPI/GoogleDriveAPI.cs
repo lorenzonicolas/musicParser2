@@ -3,11 +3,6 @@ using Google.Apis.Download;
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
 
 namespace musicParser.GoogleDrive
 {
@@ -24,7 +19,7 @@ namespace musicParser.GoogleDrive
         {
             _service = new DriveService(new BaseClientService.Initializer()
             {
-                HttpClientInitializer = getCredentials(),
+                HttpClientInitializer = GetCredentials(),
                 ApplicationName = ApplicationName
             });
         }
@@ -110,7 +105,7 @@ namespace musicParser.GoogleDrive
                 //Reset stream
                 stream.Seek(0, SeekOrigin.Begin);
 
-                StreamReader reader = new StreamReader(stream);
+                StreamReader reader = new(stream);
                 output = reader.ReadToEnd();
             }
 
@@ -121,7 +116,16 @@ namespace musicParser.GoogleDrive
         {
             try
             {
-                return ListFiles().Where(x => x.Name == name).FirstOrDefault().Id;
+                var file = ListFiles()
+                    .Where(x => x.Name == name)
+                    .FirstOrDefault();
+
+                if(file == null)
+                {
+                    throw new Exception("File not found");
+                }
+
+                return file.Id;
             }
             catch (Exception ex)
             {
@@ -129,7 +133,7 @@ namespace musicParser.GoogleDrive
             }
         }
 
-        public void UploadNewFile(string sourcePath, string saveAs = null)
+        public void UploadNewFile(string sourcePath, string? saveAs = null)
         {
             var name = string.IsNullOrEmpty(saveAs) ? Path.GetFileName(sourcePath) : saveAs;
 
@@ -171,16 +175,15 @@ namespace musicParser.GoogleDrive
         {
             try
             {
-                using (var stream = new FileStream(newFilePath, FileMode.Open))
-                {
-                    // Send the request to the API.
-                    FilesResource.UpdateMediaUpload request = _service.Files.Update(
-                        new Google.Apis.Drive.v3.Data.File(), fileId, stream, MymeType);
+                using var stream = new FileStream(newFilePath, FileMode.Open);
 
-                    request.Upload();
+                // Send the request to the API.
+                FilesResource.UpdateMediaUpload request = _service.Files.Update(
+                    new Google.Apis.Drive.v3.Data.File(), fileId, stream, MymeType);
 
-                    return request.ResponseBody != null;
-                }
+                request.Upload();
+
+                return request.ResponseBody != null;
             }
             catch (Exception e)
             {
@@ -189,7 +192,7 @@ namespace musicParser.GoogleDrive
             }
         }
 
-        private UserCredential getCredentials()
+        private static UserCredential GetCredentials()
         {
             UserCredential credential;
 
