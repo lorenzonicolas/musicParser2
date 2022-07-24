@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿#pragma warning disable IDE1006 // Naming Styles
+using Newtonsoft.Json;
 
 namespace musicParser.MetalArchives
 {

@@ -10,21 +10,22 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
     [TestFixture]
     public class FileSystemUtilsTests
     {
-        private Mock<IConsoleLogger> consoleLogger = new();
-        private Mock<IExecutionLogger> executionLogger = new();
-        private Mock<IRegexUtils> regexUtils = new();
-        private Mock<IFileSystem> fs = new();
-        private Mock<IDirectory> directory = new();
-        private Mock<IDirectoryInfoFactory> directoryInfo = new();
-        private Mock<IFileInfoFactory> fileInfoFactory = new();
-        private Mock<IFile> file = new();
+        private readonly Mock<IConsoleLogger> consoleLogger = new();
+        private readonly Mock<IExecutionLogger> executionLogger = new();
+        private readonly Mock<IRegexUtils> regexUtils = new();
+        private readonly Mock<IFileSystem> fs = new();
+        private readonly Mock<IDirectory> directory = new();
+        private readonly Mock<IDirectoryInfoFactory> directoryInfo = new();
+        private readonly Mock<IFileInfoFactory> fileInfoFactory = new();
+        private readonly Mock<IFile> file = new();
         private musicParser.Utils.FileSystemUtils.FileSystemUtils utils;
-
-        private Mock<IDirectoryInfo> normalAlbum = new();
-        private Mock<IDirectoryInfo> albumWithWeirdImageFileName = new();
-        private Mock<IDirectoryInfo> albumWithInnerFolders = new();
-        private Mock<IDirectoryInfo> bandFolder = new();
-        private Mock<IDirectoryInfo> rootBandsFolder = new();
+        
+        private static readonly Mock<IDirectoryInfo> mock = new();
+        private Mock<IDirectoryInfo> normalAlbum = mock;
+        private readonly Mock<IDirectoryInfo> albumWithWeirdImageFileName = new();
+        private readonly Mock<IDirectoryInfo> albumWithInnerFolders = new();
+        private readonly Mock<IDirectoryInfo> bandFolder = new();
+        private readonly Mock<IDirectoryInfo> rootBandsFolder = new();
 
         [OneTimeSetUp]
         public void Setup()
@@ -283,6 +284,7 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
                 .Returns(new FolderInfo() { Album = "test"});
 
             var songFile = utils.GetAnyFolderSong(folderToUse);
+            Assert.That(songFile, Is.Not.Null);
             var result = utils.GetAlbumFolderName(songFile);
 
             Assert.That(result, Is.EqualTo("test"));
@@ -412,6 +414,8 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
                     return rootBandsFolder.Object;
                 case FolderTestType.AlbumWithWeirdImage:
                     return albumWithWeirdImageFileName.Object;
+                default:
+                    break;
             }
 
             return normalAlbum.Object;
@@ -433,9 +437,14 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             return BuildDirectory(mockExplanation);
         }
 
-        private Mock<IDirectoryInfo> BuildDirectory(MockFolder info, IDirectoryInfo? parentFolder = null)
+        private Mock<IDirectoryInfo> BuildDirectory(MockFolder? info, IDirectoryInfo? parentFolder = null)
         {
             var directory = new Mock<IDirectoryInfo>();
+
+            if(info == null)
+            {
+                return directory;
+            }
 
             directory.Setup(x => x.Exists).Returns(true);
             directory.Setup(x => x.Name).Returns(info.FolderName);
@@ -454,7 +463,7 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             return directory;
         }
 
-        private Mock<IFileInfo> BuildFile(MockFile info)
+        private static Mock<IFileInfo> BuildFile(MockFile info)
         {
             var file = new Mock<IFileInfo>();
             file.Setup(x => x.Exists).Returns(true);
@@ -480,7 +489,7 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             public string FileFullName { get; set; }
         }
 
-        private List<IFileInfo> BuildAlbumFiles_WeirdImage()
+        private static List<IFileInfo> BuildAlbumFiles_WeirdImage()
         {
             var file1 = new Mock<IFileInfo>();
             file1.Setup(f => f.Name).Returns("file1.mp3");
@@ -497,7 +506,7 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             return fileList;
         }
 
-        private List<Mock<IFileInfo>> BuildAlbumFolderFiles()
+        private static List<Mock<IFileInfo>> BuildAlbumFolderFiles()
         {
             var file1 = new Mock<IFileInfo>();
             file1.Setup(f => f.Name).Returns("file1.mp3");

@@ -1,10 +1,7 @@
 ﻿using musicParser.DTO;
 using musicParser.Utils.FileSystemUtils;
 using musicParser.Utils.Loggers;
-using System;
-using System.Collections.Generic;
 using System.IO.Abstractions;
-using System.Linq;
 
 namespace musicParser.TagProcess
 {
@@ -115,25 +112,23 @@ namespace musicParser.TagProcess
                 if (anyAlbumSong == null)
                 {
                     ConsoleLogger.Log("\tNo song found on folder", LogType.Information);
-                    return null;
+                    return string.Empty;
                 }
 
-                using (var tagFile = TagLib.File.Create(anyAlbumSong.FullName))
-                {
-                    var tags = tagFile.Tag;
-                    return tags.FirstPerformer;
-                }
+                using var tagFile = TagLib.File.Create(anyAlbumSong.FullName);
+                var tags = tagFile.Tag;
+                return tags.FirstPerformer;
             }
             catch (Exception ex)
             {
                 var exMessage = string.Format("\tSomething went wrong trying to retrieve band tag on {0}.\n\t{1}", folder.Name, ex.Message);
                 ConsoleLogger.Log(exMessage, LogType.Information);
                 logger.Log(exMessage);
-                return null;
+                return string.Empty;
             }
         }
 
-        public string GetAlbumFromTag(IDirectoryInfo folder, IExecutionLogger logger)
+        public string? GetAlbumFromTag(IDirectoryInfo folder, IExecutionLogger logger)
         {
             try
             {
@@ -147,11 +142,9 @@ namespace musicParser.TagProcess
                     return null;
                 }
 
-                using (var tagFile = TagLib.File.Create(anyAlbumSong.FullName))
-                {
-                    var tags = tagFile.Tag;
-                    return tags.Album;
-                }
+                using var tagFile = TagLib.File.Create(anyAlbumSong.FullName);
+                var tags = tagFile.Tag;
+                return tags.Album;
             }
             catch (Exception ex)
             {
@@ -166,9 +159,15 @@ namespace musicParser.TagProcess
         {
             try
             {
-                var genre = GetSongGenre(FileSystemUtils.GetAnyFolderSong(albumFolder));
-
-                return genre;
+                var anySong = FileSystemUtils.GetAnyFolderSong(albumFolder);
+                if (anySong == null)
+                {
+                    throw new Exception("No song found");
+                }
+                else
+                {
+                    return GetSongGenre(anySong);
+                }
             }
             catch (Exception ex)
             {
@@ -183,18 +182,18 @@ namespace musicParser.TagProcess
             return GetAlbumGenreFromTag(FS.DirectoryInfo.FromDirectoryName(fullPath));
         }
 
-        public byte[] GetCover(IFileInfo[] files)
+        public byte[]? GetCover(IFileInfo[] files)
         {
             foreach (var songFile in files)
             {
-                using (var tagFile = TagLib.File.Create(songFile.FullName))
-                {
-                    var tags = tagFile.Tag;
-                    var pictures = tags.Pictures;
-                    var pictureFound = pictures.FirstOrDefault();
+                using var tagFile = TagLib.File.Create(songFile.FullName);
+                var tags = tagFile.Tag;
+                var pictures = tags.Pictures;
+                var pictureFound = pictures.FirstOrDefault();
 
-                    if (pictureFound != null && pictureFound.Data != null && pictureFound.Data.Count > 1)
-                        return pictureFound.Data.ToArray();
+                if (pictureFound != null && pictureFound.Data != null && pictureFound.Data.Count > 1)
+                {
+                    return pictureFound.Data.ToArray();
                 }
             }
 
@@ -210,15 +209,21 @@ namespace musicParser.TagProcess
         {
             Console.Write("New genre: ");
             var genreFromUser = Console.ReadLine();
+
+            while(string.IsNullOrEmpty(genreFromUser))
+            {
+                Console.Write("No null value please!");
+                Console.Write("New genre: ");
+                genreFromUser = Console.ReadLine();
+            }
+
             Console.WriteLine("Updating \"{0}\" genre to \"{1}\"\n", folder.Name, genreFromUser);
 
             foreach (var songFile in FileSystemUtils.GetFolderSongs(folder))
             {
-                using (var tagFile = TagLib.File.Create(songFile.FullName))
-                {
-                    tagFile.Tag.Genres = new string[] { genreFromUser };
-                    tagFile.Save();
-                }
+                using var tagFile = TagLib.File.Create(songFile.FullName);
+                tagFile.Tag.Genres = new string[] { genreFromUser };
+                tagFile.Save();
             }
         }
 
@@ -237,9 +242,12 @@ namespace musicParser.TagProcess
             }
         }
 
-        public bool IsValidYear(string yearFromMetalArchives)
+        public bool IsValidYear(string? yearFromMetalArchives)
         {
-            if (string.IsNullOrEmpty(yearFromMetalArchives)) return false;
+            if (string.IsNullOrEmpty(yearFromMetalArchives))
+            {
+                return false;
+            }
 
             try
             {

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace musicParser.GoogleDrive
+﻿namespace musicParser.GoogleDrive
 {
     public interface IGoogleDriveService
     {
