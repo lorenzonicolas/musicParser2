@@ -19,7 +19,7 @@ namespace musicParser.GoogleDrive
         {
             _service = new DriveService(new BaseClientService.Initializer()
             {
-                HttpClientInitializer = getCredentials(),
+                HttpClientInitializer = GetCredentials(),
                 ApplicationName = ApplicationName
             });
         }
@@ -192,7 +192,7 @@ namespace musicParser.GoogleDrive
             }
         }
 
-        private UserCredential getCredentials()
+        private static UserCredential GetCredentials()
         {
             UserCredential credential;
 
