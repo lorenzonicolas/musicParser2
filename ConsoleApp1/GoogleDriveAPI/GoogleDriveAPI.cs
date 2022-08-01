@@ -9,7 +9,7 @@ namespace musicParser.GoogleDrive
     public class GoogleDriveAPI : IGoogleDriveAPI
     {
         // If modifying these scopes, delete your previously saved credentials
-        // at ~/.credentials/drive-dotnet-quickstart.json
+        // at ~/.credentials/musicparser.json
         static readonly string[] Scopes = { DriveService.Scope.DriveFile };
         static readonly string ApplicationName = "Drive API .NET Quickstart";
         static readonly string MymeType = "text/plain";
@@ -197,11 +197,10 @@ namespace musicParser.GoogleDrive
             UserCredential credential;
 
             using (var stream =
-                new FileStream("client_secret.json", FileMode.Open, FileAccess.Read))
+                new FileStream("googleclient.json", FileMode.Open, FileAccess.Read))
             {
-                string credPath = Environment.GetFolderPath(
-                    Environment.SpecialFolder.Personal);
-                credPath = Path.Combine(credPath, ".credentials/drive-dotnet-quickstart.json");
+                string credPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                credPath = Path.Combine(credPath, ".credentials/musicParser.json");
 
                 credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
                     GoogleClientSecrets.FromStream(stream).Secrets,

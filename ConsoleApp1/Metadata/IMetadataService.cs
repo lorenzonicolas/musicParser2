@@ -1,5 +1,4 @@
 ﻿using musicParser.DTO;
-using System.Collections.Generic;
 
 namespace musicParser.Metadata
 {
