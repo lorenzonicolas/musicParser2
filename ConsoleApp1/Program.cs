@@ -12,6 +12,7 @@ using musicParser.TagProcess;
 using musicParser.Utils.FileSystemUtils;
 using musicParser.Utils.Loggers;
 using musicParser.Utils.Regex;
+using MusicParser.Processes.InfoProcess;
 using System.IO.Abstractions;
 
 namespace musicParser
@@ -34,17 +35,21 @@ namespace musicParser
 
             try
             {
-                if (arguments.Contains("tagFix"))
+                if (arguments.Contains("printTracklist"))
                 {
-                    //new TagFixesLifecycle().Execute(folderToProcessTags, generateLogOnOK);
+                    ActivatorUtilities.CreateInstance<PrintTracklistProcess>(host.Services).Execute();
+                }
+                else if (arguments.Contains("tagFix"))
+                {
+                    ActivatorUtilities.CreateInstance<TagFixesLifecycle>(host.Services).Execute(folderToProcessTags, generateLogOnOK);
                 }
                 else if (arguments.Contains("countryFix"))
                 {
-                    //new CountryFixesLifecycle().Execute();
+                    ActivatorUtilities.CreateInstance<CountryFixesLifecycle>(host.Services).Execute();
                 }
                 else if (arguments.Contains("resync"))
                 {
-                    //new SyncLifecycle().Execute(folderToProcess);
+                    ActivatorUtilities.CreateInstance<SyncLifecycle>(host.Services).Execute(folderToProcess);
                 }
                 else
                 {
@@ -91,6 +96,7 @@ namespace musicParser
                 services.AddSingleton<INewAlbumsInfoProcess, NewAlbumsInfoProcess>();
                 services.AddSingleton<ITagProcess, TagsProcess>();
                 services.AddSingleton<ILifecycleProcess, LifecycleProcess>();
+                services.AddSingleton<IPrintTracklist, PrintTracklistProcess>();
             });
     }
 }
