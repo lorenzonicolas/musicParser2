@@ -1,6 +1,4 @@
-﻿using musicParser.Utils.FileSystemUtils;
-
-namespace musicParser.Processes.InfoProcess
+﻿namespace musicParser.Processes.InfoProcess
 {
     // TODO
     public class FullLibraryInfoProcess: IProcess

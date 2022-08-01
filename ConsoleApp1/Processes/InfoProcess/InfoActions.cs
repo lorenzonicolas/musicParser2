@@ -4,12 +4,8 @@ using musicParser.Metadata;
 using musicParser.Utils.FileSystemUtils;
 using musicParser.Utils.Loggers;
 using musicParser.Utils.Regex;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO.Abstractions;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace musicParser.Processes.InfoProcess
 {

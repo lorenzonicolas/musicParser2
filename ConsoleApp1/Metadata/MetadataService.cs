@@ -3,11 +3,7 @@ using musicParser.GoogleDrive;
 using musicParser.MetalArchives;
 using musicParser.TagProcess;
 using musicParser.Utils.Loggers;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace musicParser.Metadata
 {
