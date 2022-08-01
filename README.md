@@ -13,9 +13,9 @@
 
 
 ## Errores
-- que no updatee el backupfile en cada nuevo disco detectado... que lo haga una sola vez
+- que no updatee el backupfile en cada nuevo disco detectado y que lo haga una sola vez
 
 - Que no descargue el archivo de google en el startup.
 
 ## Ideas de mejoras
-- agregar unit tests para poder probar más fácil los casos raros en vez de re-ejecutar todo como un boludo
+- E2E tests
