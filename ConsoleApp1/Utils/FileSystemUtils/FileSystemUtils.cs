@@ -9,7 +9,7 @@ namespace musicParser.Utils.FileSystemUtils
     {
         public static readonly List<string> CoverImageNames = new List<string> { "FRONT.JPG", "FOLDER.JPG" };
         static readonly List<string> ImageExtensions = new List<string> { ".jpg", ".jpe", ".bmp", ".png" };
-        static readonly List<string> SongExtensions = new List<string> { ".mp3", ".wav" };
+        static readonly List<string> SongExtensions = new List<string> { ".mp3", ".wav", ".m4a" };
 
         public IConsoleLogger ConsoleLogger { get; }
         public IRegexUtils RegexUtils { get; }
