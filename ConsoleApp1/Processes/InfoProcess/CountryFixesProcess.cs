@@ -1,23 +1,33 @@
 ﻿using Dasync.Collections;
+using Google.Apis.Logging;
 using musicParser.GoogleDrive;
 using musicParser.Metadata;
 using musicParser.MetalArchives;
+using musicParser.Utils.Loggers;
 
 namespace musicParser.Processes.InfoProcess
 {
-    public class CountryFixesProcess : IProcessAsync
+    public interface ICountryFixesProcess
+    {
+        Task<object> Execute();
+    }
+
+    public class CountryFixesProcess : ICountryFixesProcess
     {
         private readonly IMetadataService _metadataService;
         private readonly IMetalArchivesService _metalArchivesService;
+        private readonly IConsoleLogger _consoleLogger;
         private readonly List<DTO.AlbumInfoBackupDto> backupFile;
 
         public CountryFixesProcess(
             IGoogleDriveService googleDrive,
             IMetadataService metadataService,
-            IMetalArchivesService metalArchivesService)
+            IMetalArchivesService metalArchivesService,
+            IConsoleLogger consoleLogger)
         {
             _metadataService = metadataService;
             _metalArchivesService = metalArchivesService;
+            _consoleLogger = consoleLogger;
 
             backupFile = googleDrive.GetBackupFile();
         }
@@ -27,34 +37,34 @@ namespace musicParser.Processes.InfoProcess
             var brokenCountriesList = _metadataService.GetCountryMetadataToFix();
             if (brokenCountriesList.Count < 1)
             {
-                Console.WriteLine("No broken countries in metadata.");
+                _consoleLogger.Log("No broken countries in metadata.", DTO.LogType.Success);
                 //return;
             }
 
-            Console.WriteLine("List of bands with broken country:\n");
+            _consoleLogger.Log("List of bands with broken country:\n");
             foreach (var item in brokenCountriesList)
             {
-                Console.WriteLine($"\t- {item.Band}. Country: {item.Country}");
+                _consoleLogger.Log($"\t- {item.Band}. Country: {item.Country}");
             }
 
             await brokenCountriesList.ParallelForEachAsync(async bandDto =>
             {
-                var firstBandAlbumFound = backupFile.First(b => b.Band.Equals(bandDto.Band)).AlbumName;
+                var firstBandAlbumFound = backupFile.FirstOrDefault(b => b.Band.Equals(bandDto.Band))?.AlbumName;
                 string countryFromMetalArchives = await _metalArchivesService.GetBandCountry(bandDto.Band, firstBandAlbumFound);
 
                 if (!string.IsNullOrEmpty(countryFromMetalArchives) && !countryFromMetalArchives.Equals("Unknown"))
                 {
-                    Console.WriteLine($"Updating {bandDto.Band} country to: {countryFromMetalArchives}");
+                    _consoleLogger.Log($"Updating {bandDto.Band} country to: {countryFromMetalArchives}", DTO.LogType.Success);
                     bandDto.Country = countryFromMetalArchives;
                 }
                 else
                 {
-                    Console.WriteLine($"Band '{bandDto.Band}' country couldn't be retrieved");
+                    _consoleLogger.Log($"Band '{bandDto.Band}' country couldn't be retrieved");
                     // FixByConsoleEntry(bandDto);
                 }
             });
 
-            Console.WriteLine("\nUploading backup file to Google Drive...\n");
+            _consoleLogger.Log("\nUploading backup file to Google Drive...\n");
 
             var successUpload = _metadataService.UpdateMetadataFile();
 

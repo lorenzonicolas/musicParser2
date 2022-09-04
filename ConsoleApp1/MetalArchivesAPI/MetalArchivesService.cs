@@ -99,10 +99,6 @@ namespace musicParser.MetalArchives
                 {
                     foreach (var band in results)
                     {
-                        // TODO Bad hack :(
-                        if (long.Parse(band.Id) > int.MaxValue)
-                            continue;
-
                         var response = metalArchivesAPI.GetBandDiscography(band.Id).Result;
                         var bandDiscographyRetrieved = Newtonsoft.Json.JsonConvert.DeserializeObject<searchDiscographyResponse>(response);
 
