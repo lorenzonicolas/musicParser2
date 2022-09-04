@@ -45,7 +45,7 @@ namespace musicParser
                 }
                 else if (arguments.Contains("countryFix"))
                 {
-                    ActivatorUtilities.CreateInstance<CountryFixesLifecycle>(host.Services).Execute();
+                    ActivatorUtilities.CreateInstance<CountryFixesLifecycle>(host.Services).Execute().GetAwaiter().GetResult();
                 }
                 else if (arguments.Contains("resync"))
                 {
