@@ -95,7 +95,9 @@ namespace musicParser
                 services.AddSingleton<IRenameFoldersProcess, RenameFoldersProcess>();
                 services.AddSingleton<INewAlbumsInfoProcess, NewAlbumsInfoProcess>();
                 services.AddSingleton<ITagProcess, TagsProcess>();
+                services.AddSingleton<ITagsFixProcess, TagsFixProcess>();
                 services.AddSingleton<ILifecycleProcess, LifecycleProcess>();
+                services.AddSingleton<ICountryFixesProcess, CountryFixesProcess>();
                 services.AddSingleton<IPrintTracklist, PrintTracklistProcess>();
             });
     }

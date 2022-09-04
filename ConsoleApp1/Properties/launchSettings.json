@@ -2,7 +2,6 @@
   "profiles": {
     "WSL": {
       "commandName": "WSL2",
-      "environmentVariables": {},
       "distributionName": ""
     },
     "PrintTracklist": {
@@ -11,6 +10,14 @@
     },
     "LifeCycle": {
       "commandName": "Project"
+    },
+    "TagFix": {
+      "commandName": "Project",
+      "commandLineArgs": "tagFix"
+    },
+    "CountryFix": {
+      "commandName": "Project",
+      "commandLineArgs": "countryFix"
     }
   }
 }
