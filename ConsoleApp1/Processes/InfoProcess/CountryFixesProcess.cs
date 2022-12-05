@@ -38,7 +38,6 @@ namespace musicParser.Processes.InfoProcess
             if (brokenCountriesList.Count < 1)
             {
                 _consoleLogger.Log("No broken countries in metadata.", DTO.LogType.Success);
-                //return;
             }
 
             _consoleLogger.Log("List of bands with broken country:\n");
