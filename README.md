@@ -21,7 +21,7 @@
 ## Ideas de mejoras
 [] E2E tests
 [] Unit tests
-[] Que la MetalArchives API corra en docker en vez de local
+[X] Que la MetalArchives API corra en docker en vez de local
 [X] Que la MongoDB corra en docker en vez de local
 [] Que con un solo comando levante ambas imagenes y este todo corriendo (docker compose)
 [] Sonar-Cube gratuito para análisis de code smells y errores
@@ -30,6 +30,5 @@
 [X] Pipeline con un threshold de % de cobertura de UT - que falle el PR si no se cumple
 
 ## Errores
-- que no updatee el backupfile en cada nuevo disco detectado y que lo haga una sola vez
-
+- Que no updatee el backupfile en cada nuevo disco detectado y que lo haga una sola vez
 - Que no descargue el archivo de google en el startup.
