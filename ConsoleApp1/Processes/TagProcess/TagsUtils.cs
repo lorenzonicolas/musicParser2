@@ -9,7 +9,7 @@ namespace musicParser.TagProcess
     public class TagsUtils : ITagsUtils
     {
         static readonly int MIN_YEAR = 1950;
-        static readonly List<char> allowedChars = new List<char> { ':', '?', '\\', '/', '*', '?', '"', '<', '>', '|', '\'' };
+        static readonly List<char> allowedChars = new List<char> { ':', '?', '\\', '/', '*', '?', '"', '<', '>', '|', '\'', ',' };
         public readonly List<string> AcceptedGenres = new List<string> {
             "Black Metal",
             "Atmospheric Black Metal",

@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace musicParser.Utils.Loggers
+﻿namespace musicParser.Utils.Loggers
 {
     public class ExecutionLogger : IExecutionLogger
     {
