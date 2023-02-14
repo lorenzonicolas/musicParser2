@@ -158,7 +158,7 @@ namespace musicParser.Utils.FileSystemUtils
         /// <returns></returns>
         public bool IsAlbumFolder(IDirectoryInfo albumFolder)
         {
-            if (GetFolderSongs(albumFolder).Count() > 0)
+            if (GetFolderSongs(albumFolder).Length > 0)
             {
                 return true;
             }
