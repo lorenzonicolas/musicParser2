@@ -303,11 +303,9 @@ namespace musicParser.Utils.FileSystemUtils
         public void SaveImageFile(IDirectoryInfo cdFolder, byte[] imageTagBytes)
         {
             var outputCover = FS.Path.Combine(cdFolder.FullName, "FRONT.jpg");
-            
-            using (var fs = FS.FileStream.Create(outputCover, System.IO.FileMode.CreateNew))
-            {
-                fs.Write(imageTagBytes, 0, imageTagBytes.Length);
-            }
+
+            using var fs = FS.FileStream.Create(outputCover, FileMode.CreateNew);
+            fs.Write(imageTagBytes, 0, imageTagBytes.Length);
         }
 
         public string MoveFolder(string source, string destination)

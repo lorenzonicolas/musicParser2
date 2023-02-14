@@ -1,5 +1,7 @@
 ﻿using musicParser.Spotify.DTOs;
 using musicParser.Utils.Loggers;
+using MusicParser.Utils.HttpClient;
+using System.Globalization;
 
 namespace musicParser.Spotify
 {
@@ -7,11 +9,16 @@ namespace musicParser.Spotify
     {
         private readonly IExecutionLogger logger;
         private readonly ISpotifyAPI api;
+        private readonly IHttpClient http;
 
-        public SpotifyService(IExecutionLogger ExLogger, ISpotifyAPI spotifyAPI)
+        public SpotifyService(
+            IExecutionLogger ExLogger,
+            ISpotifyAPI spotifyAPI,
+            IHttpClient httpClient)
         {
             logger = ExLogger;
             api = spotifyAPI;
+            http = httpClient;
         }
 
         public List<string>? GetArtistGenre(string bandName)
@@ -63,7 +70,7 @@ namespace musicParser.Spotify
 
                 var albumInfo = GetAlbum(album, bandName);
 
-                if (albumInfo == null || albumInfo.Artists.Count != 1)
+                if (albumInfo == null)
                 //Didn't work. Lets at least try to get the genre using only the band name
                 {
                     return GetArtistGenre(bandName);
@@ -89,7 +96,7 @@ namespace musicParser.Spotify
                 var album = GetAlbum(albumName, bandName);
 
                 return album != null
-                    ? DateTime.ParseExact(album.ReleaseDate, "YYYY-MM-DD", System.Globalization.CultureInfo.InvariantCulture).Year.ToString()
+                    ? DateTime.ParseExact(album.ReleaseDate, "yyyy-MM-dd", CultureInfo.InvariantCulture).Year.ToString()
                     : null;
             }
             catch (Exception ex)
@@ -116,8 +123,7 @@ namespace musicParser.Spotify
                     return null;
                 }
 
-                using HttpClient webClient = new();
-                return webClient.GetByteArrayAsync(new Uri(url)).Result;
+                return http.GetByteArrayAsync(new Uri(url)).Result;
             }
             catch (Exception ex)
             {
@@ -130,7 +136,7 @@ namespace musicParser.Spotify
         {
             var searchResult = api.SearchAlbum(albumName, bandName);
 
-            if (searchResult?.Albums.Total == 1)
+            if (searchResult?.Albums.Total == 1 && searchResult.Albums.Items[0].Artists.Count == 1)
             {
                 return searchResult.Albums.Items[0];
             }
