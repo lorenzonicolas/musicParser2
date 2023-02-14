@@ -40,13 +40,17 @@ namespace musicParser.MetalArchives
         private async Task<string> Caller(string url)
         {
             HttpResponseMessage response = await client.GetAsync(url);
-            if (response.IsSuccessStatusCode)
+
+            switch (response.StatusCode)
             {
-                var stringResponse = await response.Content.ReadAsStringAsync();
-                return stringResponse;
+                case System.Net.HttpStatusCode.OK:
+                    var stringResponse = await response.Content.ReadAsStringAsync();
+                    return stringResponse;
+                case System.Net.HttpStatusCode.NotFound:
+                    throw new Exception("Content not found");
+                default:
+                    throw new Exception("Communication error");
             }
-            else
-                throw new Exception("Communication error");
         }
     }
 }

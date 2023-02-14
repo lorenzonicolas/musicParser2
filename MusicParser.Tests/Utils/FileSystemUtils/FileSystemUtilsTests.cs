@@ -8,6 +8,7 @@ using static musicParser.Utils.FileSystemUtils.FileSystemUtils;
 namespace MusicParser.Tests.Utils.FileSystemUtils
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.All)]
     public class FileSystemUtilsTests
     {
         private readonly Mock<IConsoleLogger> consoleLogger = new();
@@ -88,7 +89,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
         [TestCase("FRONT.JPG", true)]
         [TestCase("FOLDER.JPG", true)]
         [TestCase("cover.JPG", false)]
-        [Parallelizable(ParallelScope.All)]
         public void IsAlbumNameCorrect(string albumName, bool isCorrect)
         {
             Assert.That(utils.IsAlbumNameCorrect(albumName), Is.EqualTo(isCorrect));
@@ -104,7 +104,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
         [TestCase("Some Album Name (Split)", "Split")]
         [TestCase("Some Album Name [Split]", "Split")]
         [TestCase("Some Album Name", "FullAlbum")]
-        [Parallelizable(ParallelScope.All)]
         public void GetAlbumType(string algo, string expected)
         {
             var result = utils.GetAlbumType(algo);

@@ -18,12 +18,28 @@
 - (Opcional) re-cachear la base de datos: `npm run catchDB `
 - Correr la api: `npm start`
 
+ ### Como tener todo corriendo en docker:
+ # Create the network:
+`docker network create mongo-network`
+
+# Create/run the mongo image
+`docker run -d -p 27017:27017 --network mongo-network --name mongo mongo:4`
+
+# Build the metal archives api.
+## As part of the build, it will try to execute 'catchDB.js' but the connection string will point to the docker container - it will fail.
+## So let that step fail, it will build anyways, but then enter in the container and run catchDB manually.
+
+`docker build -t metal_archives_api .`
+`docker run -d -p 3000:3000 --network mongo-network --name metalarchives metal_archives_api`
+
+https://www.howtogeek.com/devops/how-to-run-mongodb-in-a-docker-container/
+
 ## Ideas de mejoras
 [] E2E tests
 [] Unit tests
 [X] Que la MetalArchives API corra en docker en vez de local
 [X] Que la MongoDB corra en docker en vez de local
-[] Que con un solo comando levante ambas imagenes y este todo corriendo (docker compose)
+[] Que con un solo comando levante ambas imagenes y este todo corriendo (docker compose?)
 [] Sonar-Cube gratuito para análisis de code smells y errores
 [] Comentar en el PR el resultado del análisis de SonarCube
 [X] Pipeline que buildee / corra unit tests en cada PR o commit / push

@@ -48,19 +48,39 @@ namespace musicParser.Processes.InfoProcess
 
             await brokenCountriesList.ParallelForEachAsync(async bandDto =>
             {
-                var firstBandAlbumFound = backupFile.FirstOrDefault(b => b.Band.Equals(bandDto.Band))?.AlbumName;
-                string countryFromMetalArchives = await _metalArchivesService.GetBandCountry(bandDto.Band, firstBandAlbumFound);
+                string countryFromMetalArchives = "Unknown";
+                var allBandAlbums = backupFile.Where(b => b.Band.Equals(bandDto.Band));
 
-                if (!string.IsNullOrEmpty(countryFromMetalArchives) && !countryFromMetalArchives.Equals("Unknown"))
+                foreach (var album in allBandAlbums)
                 {
-                    _consoleLogger.Log($"Updating {bandDto.Band} country to: {countryFromMetalArchives}", DTO.LogType.Success);
-                    bandDto.Country = countryFromMetalArchives;
+                    countryFromMetalArchives = await _metalArchivesService.GetBandCountry(bandDto.Band, album.AlbumName);
+                    
+                    if (!string.IsNullOrEmpty(countryFromMetalArchives) && !countryFromMetalArchives.Equals("Unknown"))
+                    {
+                        _consoleLogger.Log($"Updating {bandDto.Band} country to: {countryFromMetalArchives}", DTO.LogType.Success);
+                        bandDto.Country = countryFromMetalArchives;
+                        break;
+                    }
                 }
-                else
+
+                if (string.IsNullOrEmpty(countryFromMetalArchives) || countryFromMetalArchives.Equals("Unknown"))
                 {
                     _consoleLogger.Log($"Band '{bandDto.Band}' country couldn't be retrieved");
-                    // FixByConsoleEntry(bandDto);
                 }
+
+                //var firstBandAlbumFound = backupFile.FirstOrDefault(b => b.Band.Equals(bandDto.Band))?.AlbumName;
+                //string countryFromMetalArchives = await _metalArchivesService.GetBandCountry(bandDto.Band, firstBandAlbumFound);
+
+                //if (!string.IsNullOrEmpty(countryFromMetalArchives) && !countryFromMetalArchives.Equals("Unknown"))
+                //{
+                //    _consoleLogger.Log($"Updating {bandDto.Band} country to: {countryFromMetalArchives}", DTO.LogType.Success);
+                //    bandDto.Country = countryFromMetalArchives;
+                //}
+                //else
+                //{
+                //    _consoleLogger.Log($"Band '{bandDto.Band}' country couldn't be retrieved");
+                //    // FixByConsoleEntry(bandDto);
+                //}
             });
 
             _consoleLogger.Log("\nUploading backup file to Google Drive...\n");
