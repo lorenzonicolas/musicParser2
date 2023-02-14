@@ -115,7 +115,7 @@ namespace musicParser.MetalArchives
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error on GetBandCountry: {ex.Message}");
+                Console.WriteLine($"Error looking for {bandName} country: {ex.Message}");
                 return "Unknown";
             }
         }

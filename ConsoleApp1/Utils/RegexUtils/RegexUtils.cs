@@ -25,6 +25,7 @@ namespace musicParser.Utils.Regex
             var regex_Band_Album_Year = @"((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ…'&]+\s?)+)(?<! )\s*-{1}\s*((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ…'&^\-()\.]+\s?)+) \(*([0-9]{4})\)*";
             var regex_Year_Album = @"^([\d]{4})(?:\)*\s*-*\s*)((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ…'&()\[\-\.\]]+\s?)+)(?<! )";
             var regex_Band_Album = @"^((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ…'&]+\s?)+)(?<! )\s*-\s*((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ…'&()-]+\s?)+)(?<! )";
+            var regex_band_year_album = @"((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ…'&]+\s?)+)(?<! )\s*-{1}\s*\(*([0-9]{4})\)*\s*-{1}\s*((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ…'&^\-()\.]+\s?)+)";
 
             try
             {
@@ -50,6 +51,16 @@ namespace musicParser.Utils.Regex
                             result.Year = matchRegex.Groups[3].Value;
 
                             return result;
+                        }
+                        else
+                        {
+                            matchRegex = RunRegex(folderName, regex_band_year_album);
+                            if(matchRegex.Success)
+                            {
+                                result.Band = matchRegex.Groups[1].Value;
+                                result.Album = matchRegex.Groups[3].Value;
+                                result.Year = matchRegex.Groups[2].Value;
+                            }
                         }
                     }
                 }
