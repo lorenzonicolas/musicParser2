@@ -32,7 +32,7 @@ namespace MusicParser.Tests.Utils.Loggers
             Assert.Multiple(() =>
             {
                 Assert.That(logger.hasError, Is.False);
-                Assert.That(logger.hasTagChangesNeeded, Is.False);
+                Assert.That(logger.hasTagChangesNeeded, Is.True);
                 Assert.That(logger.log, Is.Empty);
             });
         }
