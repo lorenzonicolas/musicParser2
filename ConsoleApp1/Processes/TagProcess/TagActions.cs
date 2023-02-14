@@ -53,7 +53,7 @@ namespace musicParser.TagProcess
                     break;
 
                 case TagAction.UpdateTagWithMeta_Genre:
-                    if(!string.IsNullOrEmpty(band))
+                    if(!string.IsNullOrEmpty(band) && !string.IsNullOrEmpty(metaGenre))
                     {
                         tagSaveIsNeeded = true;
                         tags.Genres = new string[] { metaGenre };

@@ -9,8 +9,9 @@ namespace musicParser.TagProcess
     public class TagsUtils : ITagsUtils
     {
         static readonly int MIN_YEAR = 1950;
-        static readonly List<char> allowedChars = new List<char> { ':', '?', '\\', '/', '*', '?', '"', '<', '>', '|', '\'', ',' };
-        public readonly List<string> AcceptedGenres = new List<string> {
+        static readonly List<char> allowedChars = new() { ':', '?', '\\', '/', '*', '?', '"', '<', '>', '|', '\'', ',' };
+        public readonly List<string> AcceptedGenres = new()
+        {
             "Black Metal",
             "Atmospheric Black Metal",
             "Depressive Black Metal",
@@ -68,10 +69,8 @@ namespace musicParser.TagProcess
                     return null;
                 }
 
-                using (var tagFile = TagLib.File.Create(anyAlbumSong.FullName))
-                {
-                    return Convert.ToInt32(tagFile.Tag.Year);
-                }
+                using var tagFile = TagLib.File.Create(anyAlbumSong.FullName);
+                return Convert.ToInt32(tagFile.Tag.Year);
             }
             catch (Exception ex)
             {
@@ -234,11 +233,9 @@ namespace musicParser.TagProcess
             
             foreach (var songFile in FileSystemUtils.GetFolderSongs(folder))
             {
-                using (var tagFile = TagLib.File.Create(songFile.FullName))
-                {
-                    tagFile.Tag.Album = title;
-                    tagFile.Save();
-                }
+                using var tagFile = TagLib.File.Create(songFile.FullName);
+                tagFile.Tag.Album = title;
+                tagFile.Save();
             }
         }
 
@@ -266,7 +263,7 @@ namespace musicParser.TagProcess
         /// <param name="str1"></param>
         /// <param name="str2"></param>
         /// <returns>True when the only differences are allowed chars</returns>
-        private bool ShouldSkipNameDiscrepancy(string str1, string str2)
+        private static bool ShouldSkipNameDiscrepancy(string str1, string str2)
         {
             List<char> diff;
 
@@ -306,7 +303,7 @@ namespace musicParser.TagProcess
             if (!unlocked) throw new Exception($"Couldn't unlock file {fullname}");
         }
 
-        private string GetSongGenre(IFileInfo file)
+        private static string GetSongGenre(IFileInfo file)
         {
             string genre;
 
