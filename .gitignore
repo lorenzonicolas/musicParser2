@@ -46,3 +46,5 @@ packages/
 
 # coverlet output
 coverage.json
+coveragereport/
+*/coverage.cobertura.xml

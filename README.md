@@ -11,14 +11,14 @@
 
  Resync: vuelve a armar el archivo de backup y metadata. ATENCION. Configurar bien `folderToProcess` antes de correr este, ya que puede pisar todo el archivo backup.
 
- ### Como levantar la MetalArchives API
+### Como levantar la MetalArchives API
 - Docker corriendo
 - Tener la imagen del Mongo DB corriendo y expuesto en :27017
 - Instalar dependencias: `npm install`
 - (Opcional) re-cachear la base de datos: `npm run catchDB `
 - Correr la api: `npm start`
 
- ### Como tener todo corriendo en docker:
+### Como tener todo corriendo en docker:
  # Create the network:
 `docker network create mongo-network`
 
@@ -31,6 +31,11 @@
 
 `docker build -t metal_archives_api .`
 `docker run -d -p 3000:3000 --network mongo-network --name metalarchives metal_archives_api`
+
+### Testing y coverage report:
+
+`dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura`
+`reportgenerator -reports:"MusicParser.Tests.\coverage.cobertura.xml" -targetdir:"coveragereport" -reporttypes:Html`
 
 https://www.howtogeek.com/devops/how-to-run-mongodb-in-a-docker-container/
 
