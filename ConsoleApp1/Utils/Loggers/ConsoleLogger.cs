@@ -1,7 +1,9 @@
 ﻿using musicParser.DTO;
+using System.Diagnostics.CodeAnalysis;
 
 namespace musicParser.Utils.Loggers
 {
+    [ExcludeFromCodeCoverage]
     public class ConsoleLogger : IConsoleLogger
     {
         public void Log(string message, LogType type = LogType.Process)
