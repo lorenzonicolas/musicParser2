@@ -1,16 +1,21 @@
-﻿namespace musicParser.Utils.Loggers
+﻿using System.IO.Abstractions;
+
+namespace musicParser.Utils.Loggers
 {
     public class ExecutionLogger : IExecutionLogger
     {
-        private string log;
-        private bool hasError;
-        private bool hasTagChangesNeeded;
+        public string log;
+        public bool hasError;
+        public bool hasTagChangesNeeded;
 
-        public ExecutionLogger()
+        private readonly IFileSystem fs;
+
+        public ExecutionLogger(IFileSystem fileSystem)
         {
             log = string.Empty;
             hasError = false;
             hasTagChangesNeeded = false;
+            fs = fileSystem;
         }
 
         public void StartExecutionLog()
@@ -28,7 +33,9 @@
         public void ExportLogFile(string destiny, bool generateLogOnOK = true)
         {
             if (!generateLogOnOK && !hasError && !hasTagChangesNeeded)
+            {
                 return;
+            }
 
             var fileName = DateTime.Now.ToString("yyyy-MM-dd--HH-mm-ss") + "__";
 
@@ -37,9 +44,9 @@
 
             fileName += ".txt";
 
-            if (Directory.Exists(destiny))
+            if (fs.Directory.Exists(destiny))
             {
-                File.AppendAllText(Path.Combine(destiny, fileName), log, System.Text.Encoding.UTF8);
+                fs.File.AppendAllText(fs.Path.Combine(destiny, fileName), log, System.Text.Encoding.UTF8);
             }
             else
             {
