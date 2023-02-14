@@ -88,7 +88,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
         [TestCase("FRONT.JPG", true)]
         [TestCase("FOLDER.JPG", true)]
         [TestCase("cover.JPG", false)]
-        [Parallelizable(ParallelScope.All)]
         public void IsAlbumNameCorrect(string albumName, bool isCorrect)
         {
             Assert.That(utils.IsAlbumNameCorrect(albumName), Is.EqualTo(isCorrect));
@@ -104,7 +103,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
         [TestCase("Some Album Name (Split)", "Split")]
         [TestCase("Some Album Name [Split]", "Split")]
         [TestCase("Some Album Name", "FullAlbum")]
-        [Parallelizable(ParallelScope.All)]
         public void GetAlbumType(string algo, string expected)
         {
             var result = utils.GetAlbumType(algo);
@@ -242,8 +240,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
 
             var result = utils.GetFolderAlbums("path");
             Assert.That(result?.Count, Is.EqualTo(expected));
-
-            directoryInfo.Reset();
         }
 
         [Test]
@@ -269,8 +265,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
 
             var result = utils.GetFolderArtists("path");
             Assert.That(result?.Length, Is.EqualTo(expected));
-
-            directoryInfo.Reset();
         }
 
         [Test]
@@ -289,8 +283,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
 
             Assert.That(result, Is.EqualTo("test"));
             regexUtils.Verify(x => x.GetFolderInformation("1994 - In the Nightside Eclipse"), Times.Once);
-
-            regexUtils.Reset();
         }
 
         [Test]
@@ -308,8 +300,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             var result = utils.ValidateDirectory("testDirectoryPath", createIfNotExists);
 
             Assert.That(result, Is.True);
-
-            this.directory.Reset();
         }
 
         [Test]
@@ -322,8 +312,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
 
             Assert.That(result, Is.False);
             consoleLogger.Verify(mock => mock.Log("exceptionMsg", LogType.Error), Times.Once);
-
-            this.directory.Reset();
         }
 
         [TestCase(true)]
@@ -339,9 +327,7 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             if (isReadonlyAlready)
                 file1.VerifySet(x => x.IsReadOnly = false, Times.Once);
             else
-                file1.VerifySet(x => x.IsReadOnly = false, Times.Never);
-
-            fileInfoFactory.Reset();            
+                file1.VerifySet(x => x.IsReadOnly = false, Times.Never);            
         }
 
         [Test]
@@ -356,8 +342,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
 
             Assert.That(result, Is.EqualTo(expectedDestiny));
             mockedDir.Verify(x => x.MoveTo(expectedDestiny), Times.Once);
-
-            directoryInfo.Reset();
         }
 
         [Test]
@@ -386,16 +370,16 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             {
                 file.Verify(x => x.Copy(item.Object.FullName, $"{expectedDestiny}\\{item.Object.Name}", true), Times.Once);
             }
-
-            file.Reset();
-            directoryInfo.Reset();
-            directory.Reset();
         }
 
         [TearDown]
         public void TearDown()
         {
+            directory.Reset();
             consoleLogger.Reset();
+            regexUtils.Reset();
+            directoryInfo.Reset();
+            file.Reset();
         }
 
         #region Test Utils

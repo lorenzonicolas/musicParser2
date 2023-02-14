@@ -9,7 +9,7 @@ namespace musicParser.Utils.FileSystemUtils
     {
         public static readonly List<string> CoverImageNames = new List<string> { "FRONT.JPG", "FOLDER.JPG" };
         static readonly List<string> ImageExtensions = new List<string> { ".jpg", ".jpe", ".bmp", ".png" };
-        static readonly List<string> SongExtensions = new List<string> { ".mp3", ".wav", ".m4a" };
+        static readonly List<string> SongExtensions = new List<string> { ".mp3", ".wav", ".m4a", ".wma" };
 
         public IConsoleLogger ConsoleLogger { get; }
         public IRegexUtils RegexUtils { get; }
@@ -379,10 +379,9 @@ namespace musicParser.Utils.FileSystemUtils
 
             if (!string.IsNullOrEmpty(bandName))
             {
-                var destinyBandPath = $"{outputPath}\\{bandName}";
-                fullDestinyPath = isBandFolder ? destinyBandPath : $"{destinyBandPath}\\{dirInfo.Name}";
+                fullDestinyPath = isBandFolder ? outputPath : $"{outputPath}\\{bandName}";
 
-                MoveFolder(sourcePath, destinyBandPath);
+                MoveFolder(sourcePath, fullDestinyPath);
 
                 // Clean the working folder if doesn't contain any other album
                 if (isAlbumFolder && parentInfo.GetDirectories().Length < 1)

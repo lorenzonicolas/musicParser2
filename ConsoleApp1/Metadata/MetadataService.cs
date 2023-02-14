@@ -31,23 +31,34 @@ namespace musicParser.Metadata
         public bool SyncMetadataFile(List<AlbumInfoOnDisk> allAlbums)
         {
             var updateNeeded = false;
-            var addedEntries = new ConcurrentBag<MetadataDto>();
+            var newAlbumEntries = new ConcurrentBag<MetadataDto>();
 
             Parallel.ForEach(allAlbums, (album) => 
             {
                 if (!metadata.Any(x => x.Band.Equals(album.Band, StringComparison.InvariantCultureIgnoreCase))
-                && !addedEntries.Any(x => x.Band.Equals(album.Band, StringComparison.InvariantCultureIgnoreCase)))
+                && !newAlbumEntries.Any(x => x.Band.Equals(album.Band, StringComparison.InvariantCultureIgnoreCase)))
                 {
-                    addedEntries.Add(GenerateNewBand(album));
+                    newAlbumEntries.Add(GenerateNewBand(album));
                     Console.WriteLine("New band metadata entry: " + album.Band);
+                }
+                else
+                {
+                    var bandInMetadata = metadata.Single(metadataBand => metadataBand.Band.Equals(album.Band, StringComparison.InvariantCultureIgnoreCase));
+                    if(bandInMetadata.Genre.Equals("Unknown", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        bandInMetadata.Genre = TagsUtils.GetAlbumGenre(album.FolderPath);
+                    }
                 }
             });
 
-            if (addedEntries.Count > 0)
+            if (!newAlbumEntries.IsEmpty)
             {
-                var distinctItems = addedEntries.GroupBy(x => x.Band).Select(y => y.First());
-                metadata.AddRange(distinctItems);
-                metadata.OrderBy(x => x.Band);
+                var newBands = newAlbumEntries
+                    .GroupBy(x => x.Band)
+                    .Select(y => y.First());
+
+                metadata.AddRange(newBands);
+                metadata.Sort();
                 updateNeeded = true;
             }
 

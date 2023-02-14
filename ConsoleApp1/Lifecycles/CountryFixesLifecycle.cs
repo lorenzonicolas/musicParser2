@@ -1,54 +1,35 @@
-﻿using musicParser.Utils.Loggers;
+﻿using musicParser.Processes.InfoProcess;
+using musicParser.Utils.Loggers;
 
 namespace musicParser.Processes
 {
     public class CountryFixesLifecycle
     {
-        private readonly IProcess countryFixProcessor;
-        
-        private readonly IExecutionLogger loggerInstance;
+        private readonly ICountryFixesProcess countryFixProcessor;        
+        private readonly IConsoleLogger loggerInstance;
 
         public CountryFixesLifecycle(
-            IExecutionLogger logger,
-            IProcess countryFix)
+            IConsoleLogger logger,
+            ICountryFixesProcess countryFix)
         {
             loggerInstance = logger;
             countryFixProcessor = countryFix;
         }
 
-        public void Execute()
+        public async Task Execute()
         {
             Console.Clear();
 
             try
             {
-                loggerInstance.StartExecutionLog();
-
-                try
-                {
-                    Console.WriteLine("Country metadata fix\n\n");
-                    countryFixProcessor.Execute(string.Empty);
-
-                    //TODO
-                    //loggerInstance.ExportLogFile(folderToProcess);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("-Execution terminated because of error- " + ex.Message);
-                    loggerInstance.LogError("-Execution terminated because of error- " + ex.Message);
-                    //todo
-                    //loggerInstance.ExportLogFile(folder.FullName);
-                }
+                loggerInstance.Log("Country metadata fix\n\n");
+                await countryFixProcessor.Execute();
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("ERROR\n" + ex);
-                Console.ResetColor();
+                loggerInstance.Log("-Execution terminated because of error- " + ex.Message, DTO.LogType.Error);
             }
-
-            Console.WriteLine("Press any key to finish...");
-            Console.ReadKey();
+            
         }
     }
 }

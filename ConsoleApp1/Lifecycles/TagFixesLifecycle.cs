@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
+using musicParser.Processes.InfoProcess;
+using musicParser.TagProcess;
 using musicParser.Utils.FileSystemUtils;
 using musicParser.Utils.Loggers;
 
@@ -6,8 +8,8 @@ namespace musicParser.Processes
 {
     public class TagFixesLifecycle
     {
-        private readonly IProcess newAlbumsProcessor;
-        private readonly IProcess tagFixProcessor;
+        private readonly INewAlbumsInfoProcess newAlbumsProcessor;
+        private readonly ITagsFixProcess tagFixProcessor;
         private readonly IFileSystemUtils FileSystemUtils;
         private readonly IExecutionLogger loggerInstance;
 
@@ -15,8 +17,8 @@ namespace musicParser.Processes
 
         public TagFixesLifecycle(
             IExecutionLogger executionLogger,
-            IProcess NewAlbumsProcessor,
-            IProcess TagFixProcessor,
+            INewAlbumsInfoProcess NewAlbumsProcessor,
+            ITagsFixProcess TagFixProcessor,
             IFileSystemUtils fileSystemUtils,
             IConfiguration config)
         {
