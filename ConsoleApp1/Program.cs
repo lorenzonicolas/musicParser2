@@ -13,10 +13,13 @@ using musicParser.Utils.FileSystemUtils;
 using musicParser.Utils.Loggers;
 using musicParser.Utils.Regex;
 using MusicParser.Processes.InfoProcess;
+using MusicParser.Utils.HttpClient;
+using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
 
 namespace musicParser
 {
+    [ExcludeFromCodeCoverage]
     static class Program
     {
         public static IConfigurationRoot Configuration { get; private set; }
@@ -77,6 +80,7 @@ namespace musicParser
             .ConfigureServices((services) =>
             {
                 services.AddHostedService<MusicParser.ConsoleService>();
+                services.AddSingleton<IHttpClient, MusicParser.Utils.HttpClient.HttpClient>();
                 services.AddSingleton<IConsoleLogger, ConsoleLogger>();
                 services.AddSingleton<IExecutionLogger, ExecutionLogger>();
                 services.AddSingleton<IRegexUtils, RegexUtils>();

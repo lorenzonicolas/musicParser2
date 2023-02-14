@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Hosting;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MusicParser
 {
+    [ExcludeFromCodeCoverage]
     internal class ConsoleService : IHostedService
     {
         private readonly IHostApplicationLifetime _appLifetime;
