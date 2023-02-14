@@ -202,7 +202,8 @@ namespace musicParser.Processes.FilesProcess
                 else
                 {
                     //Get from MetalArchives
-                    imageTagBytes = metalArchivesService.DownloadAlbumCover(bandName, albumName).Result;
+                    // TODO
+                    //imageTagBytes = metalArchivesService.DownloadAlbumCover(bandName, albumName).Result;
 
                     if (imageTagBytes != null)
                     {
