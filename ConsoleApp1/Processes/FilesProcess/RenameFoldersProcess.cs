@@ -303,7 +303,9 @@ namespace musicParser.Processes.FilesProcess
                     {
                         Log($"Retrieved year from Spotify: {yearFromSpotify}");
                         _logger.Log($"Retrieved year from Spotify: {yearFromSpotify}");
+#pragma warning disable CS8601 // Possible null reference assignment.
                         folderInfo.Year = yearFromSpotify;
+#pragma warning restore CS8601 // Possible null reference assignment.
                         found = true;
                     }
                     else
@@ -314,7 +316,9 @@ namespace musicParser.Processes.FilesProcess
                         {
                             Log($"Retrieved year from MetalArchives: {yearFromMetalArchives}");
                             _logger.Log($"Retrieved year from MetalArchives: {yearFromMetalArchives}");
+#pragma warning disable CS8601 // Possible null reference assignment.
                             folderInfo.Year = yearFromMetalArchives;
+#pragma warning restore CS8601 // Possible null reference assignment.
                             found = true;
                         }
                         else
