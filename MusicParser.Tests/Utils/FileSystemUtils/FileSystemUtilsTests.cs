@@ -209,8 +209,10 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
         [TestCase(FolderTestType.RootBandsFolder, FolderType.Album, true)]
         public void GetFolderType(FolderTestType folderType, FolderType expected, bool throwsEx = false)
         {
-            if(throwsEx)
+            if (throwsEx)
+            {
                 Assert.Throws<FolderTypeException>(() => utils.GetFolderType(GetObjectToUse(folderType)));
+            }
             else
             {
                 Assert.That(utils.GetFolderType(GetObjectToUse(folderType)), Is.EqualTo(expected));
