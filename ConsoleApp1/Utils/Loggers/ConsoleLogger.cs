@@ -1,5 +1,4 @@
 ﻿using musicParser.DTO;
-using System;
 
 namespace musicParser.Utils.Loggers
 {
@@ -7,6 +6,8 @@ namespace musicParser.Utils.Loggers
     {
         public void Log(string message, LogType type = LogType.Process)
         {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
             switch (type)
             {
                 case LogType.Error:

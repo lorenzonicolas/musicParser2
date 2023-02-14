@@ -99,10 +99,6 @@ namespace musicParser.MetalArchives
                 {
                     foreach (var band in results)
                     {
-                        // TODO Bad hack :(
-                        if (long.Parse(band.Id) > int.MaxValue)
-                            continue;
-
                         var response = metalArchivesAPI.GetBandDiscography(band.Id).Result;
                         var bandDiscographyRetrieved = Newtonsoft.Json.JsonConvert.DeserializeObject<searchDiscographyResponse>(response);
 
@@ -119,7 +115,7 @@ namespace musicParser.MetalArchives
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error on GetBandCountry: {ex.Message}");
+                Console.WriteLine($"Error looking for {bandName} country: {ex.Message}");
                 return "Unknown";
             }
         }

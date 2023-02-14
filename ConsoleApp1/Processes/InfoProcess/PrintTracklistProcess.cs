@@ -19,6 +19,7 @@ namespace MusicParser.Processes.InfoProcess
         private readonly IMetadataService metadata;
 
         private readonly string template =
+            $"BAND_NAME - BAND_ALBUM (BAND_YEAR) [FullAlbum]\n" +
             $"BAND_NAME - BAND_ALBUM\n\n" +
             $"----- TRACKLIST ------\n" +
             $"BAND_TRACKLIST\n\n" +
@@ -31,7 +32,8 @@ namespace MusicParser.Processes.InfoProcess
             $"Year: BAND_YEAR\n" +
             $"Genre: BAND_GENRE\n" +
             $"Country: BAND_COUNTRY\n" +
-            $"LINK_TO_METALARCHIVES";
+            $"LINK_TO_METALARCHIVES\n" +
+            $"https://www.google.com/search?q=metal+archives+URL_NAME";
 
         public PrintTracklistProcess(
             IFileSystemUtils fileSystemUtils,
@@ -91,7 +93,7 @@ namespace MusicParser.Processes.InfoProcess
                     var fileInfo = regex.GetFileInformation(song.Name);
 
                     using var tags = TagLib.File.Create(song.FullName);
-                    trackList += $"{count.Minutes.ToString("00")}:{count.Seconds.ToString("00")} - {fileInfo.TrackNumber}. {fileInfo.Title}\n";
+                    trackList += $"{count.Minutes:00}:{count.Seconds:00} - {fileInfo.TrackNumber}. {fileInfo.Title}\n";
                     count += tags.Properties.Duration;
                 }
 
@@ -101,7 +103,8 @@ namespace MusicParser.Processes.InfoProcess
                     .Replace("BAND_TRACKLIST", trackList)
                     .Replace("BAND_YEAR", albumInfo.Year)
                     .Replace("BAND_GENRE", metadata.GetBandGenre(bandName))
-                    .Replace("BAND_COUNTRY", metadata.GetBandCountry(bandName));
+                    .Replace("BAND_COUNTRY", metadata.GetBandCountry(bandName))
+                    .Replace("URL_NAME", bandName.Replace(' ', '_'));
 
                 Console.WriteLine("Output:\n\n" + trackList);
 

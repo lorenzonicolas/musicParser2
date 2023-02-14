@@ -1,6 +1,9 @@
 ﻿namespace musicParser.Processes.InfoProcess
 {
-    public interface INewAlbumsInfoProcess : IProcess { }
+    public interface INewAlbumsInfoProcess
+    {
+        object Execute(string folderPath);
+    }
     public class NewAlbumsInfoProcess : INewAlbumsInfoProcess
     {
         private readonly IInfoActions infoActions;

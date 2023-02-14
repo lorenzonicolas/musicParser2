@@ -1,7 +1,6 @@
 ﻿using musicParser.DTO;
 using musicParser.Metadata;
 using musicParser.MetalArchives;
-using musicParser.Processes;
 using musicParser.Spotify;
 using musicParser.Utils.FileSystemUtils;
 using musicParser.Utils.Loggers;
@@ -10,7 +9,11 @@ using System.IO.Abstractions;
 
 namespace musicParser.TagProcess
 {
-    public interface ITagsFixProcess : IProcess { }
+    public interface ITagsFixProcess
+    {
+        object Execute(string folderToProcess);
+    }
+
     partial class TagsFixProcess : ITagsFixProcess
     {
         private readonly IExecutionLogger _logger;
