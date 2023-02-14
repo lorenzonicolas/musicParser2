@@ -10,11 +10,14 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
     [TestFixture]
     public class FileSystemUtilsTests
     {
+        private const string EMPEROR_ALBUM_NAME = "1994 - In the Nightside Eclipse";
         private readonly Mock<IConsoleLogger> consoleLogger = new();
         private readonly Mock<IExecutionLogger> executionLogger = new();
         private readonly Mock<IRegexUtils> regexUtils = new();
         private readonly Mock<IFileSystem> fs = new();
         private readonly Mock<IDirectory> directory = new();
+        private readonly Mock<IPath> path = new();
+        private readonly Mock<IFileStreamFactory> fileStream = new();
         private readonly Mock<IDirectoryInfoFactory> directoryInfo = new();
         private readonly Mock<IFileInfoFactory> fileInfoFactory = new();
         private readonly Mock<IFile> file = new();
@@ -34,6 +37,8 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             fs.Setup(f => f.DirectoryInfo).Returns(directoryInfo.Object);
             fs.Setup(f => f.FileInfo).Returns(fileInfoFactory.Object);
             fs.Setup(f => f.File).Returns(file.Object);
+            fs.Setup(f => f.Path).Returns(path.Object);
+            fs.Setup(f => f.FileStream).Returns(fileStream.Object);
 
             this.utils = new musicParser.Utils.FileSystemUtils.FileSystemUtils(consoleLogger.Object, regexUtils.Object, fs.Object);
 
@@ -71,12 +76,12 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
                 .Returns(new List<IDirectoryInfo> { bandFolder.Object }.ToArray());
         }
 
-        private Mock<IDirectoryInfo> CreateNormalAlbum()
+        private static Mock<IDirectoryInfo> CreateNormalAlbum()
         {
             var mockedFiles = BuildAlbumFolderFiles();
             var albumMock = new Mock<IDirectoryInfo>();
             albumMock.Setup(mock => mock.GetFiles()).Returns(mockedFiles.Select(x=>x.Object).ToArray());
-            albumMock.Setup(mock => mock.Name).Returns("1994 - In the Nightside Eclipse");
+            albumMock.Setup(mock => mock.Name).Returns(EMPEROR_ALBUM_NAME);
             foreach (var file in mockedFiles)
             {
                 file.Setup(x => x.Directory).Returns(albumMock.Object);
@@ -84,7 +89,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             return albumMock;
         }
 
-        [Test]
         [TestCase("FRONT.JPG", true)]
         [TestCase("FOLDER.JPG", true)]
         [TestCase("cover.JPG", false)]
@@ -93,7 +97,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             Assert.That(utils.IsAlbumNameCorrect(albumName), Is.EqualTo(isCorrect));
         }
 
-        [Test]
         [TestCase("Some Album Name (EP)", "EP")]
         [TestCase("Some Album Name [EP]", "EP")]
         [TestCase("Some Album Name (Demo)", "Demo")]
@@ -110,7 +113,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             Assert.That(result, Is.EqualTo(expected));
         }
 
-        [Test]
         [TestCase(FolderTestType.NormalAlbum, 2)]
         [TestCase(FolderTestType.AlbumWithInnerCds, 0)]
         [TestCase(FolderTestType.BandFolder, 0)]
@@ -122,7 +124,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             Assert.That(result, Has.Length.EqualTo(expected));
         }
 
-        [Test]
         [TestCase(FolderTestType.NormalAlbum, true)]
         [TestCase(FolderTestType.AlbumWithInnerCds, true)]
         [TestCase(FolderTestType.BandFolder, false)]
@@ -133,7 +134,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             Assert.That(result, Is.EqualTo(expected));
         }
 
-        [Test]
         [TestCase(FolderTestType.NormalAlbum, false)]
         [TestCase(FolderTestType.AlbumWithInnerCds, false)]
         [TestCase(FolderTestType.BandFolder, false)]
@@ -144,7 +144,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             Assert.That(result, Is.EqualTo(expected));
         }
 
-        [Test]
         [TestCase(FolderTestType.NormalAlbum, false)]
         [TestCase(FolderTestType.AlbumWithInnerCds, true)]
         [TestCase(FolderTestType.BandFolder, false)]
@@ -155,7 +154,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             Assert.That(result, Is.EqualTo(expected));
         }
 
-        [Test]
         [TestCase(FolderTestType.NormalAlbum, false)]
         [TestCase(FolderTestType.AlbumWithInnerCds, false)]
         [TestCase(FolderTestType.BandFolder, true)]
@@ -166,7 +164,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             Assert.That(result is null, Is.EqualTo(resultIsNull));
         }
 
-        [Test]
         [TestCase(FolderTestType.NormalAlbum, 4)]
         [TestCase(FolderTestType.AlbumWithInnerCds, 0)]
         [TestCase(FolderTestType.BandFolder, 0)]
@@ -178,7 +175,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             Assert.That(result, Has.Length.EqualTo(expected));
         }
 
-        [Test]
         [TestCase(FolderTestType.NormalAlbum, false)]
         [TestCase(FolderTestType.AlbumWithInnerCds, false)]
         [TestCase(FolderTestType.BandFolder, true)]
@@ -189,7 +185,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             Assert.That(result, Is.EqualTo(expected));
         }
 
-        [Test]
         [TestCase(FolderTestType.NormalAlbum, "FRONT.jpg")]
         [TestCase(FolderTestType.AlbumWithWeirdImage, "weirdName.jpg")]
         [TestCase(FolderTestType.AlbumWithInnerCds, null)]
@@ -201,7 +196,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             Assert.That(result?.Name, Is.EqualTo(expectedFileName));
         }
 
-        [Test]
         [TestCase(FolderTestType.NormalAlbum, FolderType.Album)]
         [TestCase(FolderTestType.AlbumWithWeirdImage, FolderType.Album)]
         [TestCase(FolderTestType.AlbumWithInnerCds, FolderType.AlbumWithMultipleCDs)]
@@ -219,7 +213,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             }                
         }
 
-        [Test]
         [TestCase(FolderTestType.NormalAlbum, 0)]
         [TestCase(FolderTestType.AlbumWithInnerCds, 2)]
         [TestCase(FolderTestType.BandFolder, 1)]
@@ -230,7 +223,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             Assert.That(result?.Length, Is.EqualTo(expected));
         }
 
-        [Test]
         [TestCase(FolderTestType.NormalAlbum, 0)]
         [TestCase(FolderTestType.AlbumWithInnerCds, 2)]
         [TestCase(FolderTestType.BandFolder, 1)]
@@ -244,7 +236,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             Assert.That(result?.Count, Is.EqualTo(expected));
         }
 
-        [Test]
         [TestCase(FolderTestType.NormalAlbum, 0)]
         [TestCase(FolderTestType.AlbumWithInnerCds, 0)]
         [TestCase(FolderTestType.BandFolder, 0)]
@@ -255,7 +246,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             Assert.That(result?.Length, Is.EqualTo(expected));
         }
 
-        [Test]
         [TestCase(FolderTestType.NormalAlbum, 0)]
         [TestCase(FolderTestType.AlbumWithInnerCds, 0)]
         [TestCase(FolderTestType.BandFolder, 0)]
@@ -269,7 +259,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             Assert.That(result?.Length, Is.EqualTo(expected));
         }
 
-        [Test]
         [TestCase(FolderTestType.NormalAlbum)]
         [TestCase(FolderTestType.AlbumWithInnerCds)]
         public void GetAlbumFolderName(FolderTestType folderType)
@@ -287,7 +276,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
             regexUtils.Verify(x => x.GetFolderInformation("1994 - In the Nightside Eclipse"), Times.Once);
         }
 
-        [Test]
         [TestCase(true)]
         [TestCase(false)]
         public void ValidateDirectory(bool createIfNotExists)
@@ -332,7 +320,6 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
                 file1.VerifySet(x => x.IsReadOnly = false, Times.Never);            
         }
 
-        [Test]
         [TestCase("C:\\Music\\Emperor", "C:\\Destiny", "C:\\Destiny\\Emperor")]
         [TestCase("C:\\Music\\Emperor\\1994 - In", "C:\\Destiny", "C:\\Destiny\\1994 - In")]
         public void MoveFolder(string source, string destiny, string expectedDestiny)
@@ -347,6 +334,23 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
         }
 
         [Test]
+        public void SaveImageFile()
+        {
+            var mockedImage = new List<byte>().ToArray();
+            Mock<Stream> mockedStream = new();
+            var outputPath = "somePath";
+
+            path.Setup(o => o.Combine(normalAlbum.Object.FullName, "FRONT.jpg")).Returns(outputPath);
+            fs.Setup(o => o.FileStream.Create(outputPath, FileMode.CreateNew)).Returns(mockedStream.Object);
+            mockedStream.Setup(o => o.Write(mockedImage, 0, mockedImage.Length));
+
+            utils.SaveImageFile(normalAlbum.Object, mockedImage);
+
+            path.Verify(p => p.Combine(normalAlbum.Object.FullName, "FRONT.jpg"), Times.Once);
+            fs.Verify(o => o.FileStream.Create(outputPath, FileMode.CreateNew), Times.Once);
+            mockedStream.Verify(o => o.Write(mockedImage, 0, mockedImage.Length), Times.Once);
+        }
+
         [TestCase("C:\\Music\\Emperor\\1994 - In", "C:\\Destiny\\Emperor", "C:\\Destiny\\Emperor\\1994 - In")]
         public void CopyFolder(string source, string destiny, string expectedDestiny)
         {
