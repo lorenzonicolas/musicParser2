@@ -5,7 +5,7 @@ namespace MusicParser.Utils.HttpClient
     [ExcludeFromCodeCoverage]
     public class HttpClient : IHttpClient
     {
-        private readonly HttpClient _client = new();
+        private readonly System.Net.Http.HttpClient _client = new();
 
         public HttpResponseMessage Get(string url)
         {
