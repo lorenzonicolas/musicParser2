@@ -133,7 +133,9 @@ namespace musicParser.TagProcess
                     //In case it's readonly
                     TagsUtils.UnlockFile(songFile.FullName);
                     using var tagFile = TagLib.File.Create(songFile.FullName);
+#pragma warning disable CS8601 // Possible null reference assignment.
                     tagFile.Tag.Genres = new string[] { genreDecided };
+#pragma warning restore CS8601 // Possible null reference assignment.
                     tagFile.Save();
                 }
                 catch (Exception ex)
