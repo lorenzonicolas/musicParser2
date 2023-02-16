@@ -13,7 +13,7 @@ namespace musicParser.Spotify
         private readonly IRegexUtils RegexUtils;
         private readonly IHttpClient client;
 
-        private readonly string loginUrl = "https://accounts.spotify.com/api/token";
+        public static readonly string loginUrl = "https://accounts.spotify.com/api/token";
         private readonly string searchUrl = "https://api.spotify.com/v1/search?q={0}&type={1}";
         private readonly string bandByIDUrl = "https://api.spotify.com/v1/artists/{0}";
         private readonly string accessToken;
@@ -114,12 +114,12 @@ namespace musicParser.Spotify
 
             if (operation == WebRequestMethods.Http.Get)
             {
-                response = client.GetAsync(url).Result;
+                response = client.Get(url);
             }
             else if (operation == WebRequestMethods.Http.Post)
             {
 #pragma warning disable CS8604 // Possible null reference argument.
-                response = client.PostAsync(url, content).Result;
+                response = client.Post(url, content);
 #pragma warning restore CS8604 // Possible null reference argument.
             }
             else

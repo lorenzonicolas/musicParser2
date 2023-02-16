@@ -7,6 +7,8 @@ using NUnit.Framework.Internal;
 
 namespace MusicParser.Tests.SpotifyAPI
 {
+    [TestFixture]
+    [Parallelizable]
     public class SpotifyServiceTests
     {
         const string albumName = "album_name";
