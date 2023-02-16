@@ -8,6 +8,7 @@ using static musicParser.Utils.FileSystemUtils.FileSystemUtils;
 namespace MusicParser.Tests.Utils.FileSystemUtils
 {
     [TestFixture]
+    [Parallelizable]
     public class FileSystemUtilsTests
     {
         private const string EMPEROR_ALBUM_NAME = "1994 - In the Nightside Eclipse";
@@ -381,11 +382,11 @@ namespace MusicParser.Tests.Utils.FileSystemUtils
         [TearDown]
         public void TearDown()
         {
-            directory.Reset();
-            consoleLogger.Reset();
-            regexUtils.Reset();
-            directoryInfo.Reset();
-            file.Reset();
+            directory.Invocations.Clear();
+            consoleLogger.Invocations.Clear();
+            regexUtils.Invocations.Clear();
+            directoryInfo.Invocations.Clear();
+            file.Invocations.Clear();
         }
 
         #region Test Utils
