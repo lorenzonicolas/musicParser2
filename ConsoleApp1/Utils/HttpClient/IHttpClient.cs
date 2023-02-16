@@ -7,5 +7,7 @@
         Task<HttpResponseMessage> GetAsync(string url);
         Task<HttpResponseMessage> PostAsync(string url, HttpContent content);
         Task<byte[]> GetByteArrayAsync(Uri url);
+        void SetAuthHeaders(string scheme, string value);
+        void AddHeaders(string name, string value);
     }
 }
