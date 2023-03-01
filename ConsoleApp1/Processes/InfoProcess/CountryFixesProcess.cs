@@ -53,7 +53,7 @@ namespace musicParser.Processes.InfoProcess
 
                 foreach (var album in allBandAlbums)
                 {
-                    countryFromMetalArchives = await _metalArchivesService.GetBandCountry(bandDto.Band, album.AlbumName);
+                    countryFromMetalArchives = await _metalArchivesService.GetBandCountryAsync(bandDto.Band, album.AlbumName);
                     
                     if (!string.IsNullOrEmpty(countryFromMetalArchives) && !countryFromMetalArchives.Equals("Unknown"))
                     {

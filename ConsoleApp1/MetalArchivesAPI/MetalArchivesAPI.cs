@@ -5,11 +5,6 @@ namespace musicParser.MetalArchives
     public class MetalArchivesAPI : IMetalArchivesAPI
     {
         private readonly HttpClient client;
-
-        //private readonly string searchURL = "http://em.wemakesites.net/search/{0}/{1}?api_key={2}";
-        //private readonly string bandURL = "http://em.wemakesites.net/band/{0}?api_key={1}";
-        //private readonly string albumURL = "http://em.wemakesites.net/album/{0}?api_key={1}";
-
         private readonly string bandURL = "http://localhost:3000/bands";
 
         public MetalArchivesAPI()
@@ -34,6 +29,12 @@ namespace musicParser.MetalArchives
         public async Task<string> GetBandDiscography(string bandId)
         {
             var url = $"{bandURL}/{bandId}/discography";
+            return await Caller(url);
+        }
+
+        public async Task<string> GetAlbumCoverUrl(string albumId)
+        {
+            var url = $"{bandURL}/album/{albumId}";
             return await Caller(url);
         }
 
