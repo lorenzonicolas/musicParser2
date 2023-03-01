@@ -7,7 +7,6 @@
 
     public class SearchDiscography
     {
-        //public string query { get; set; }
         public AlbumResult[] discography { get; set; }
     }
 

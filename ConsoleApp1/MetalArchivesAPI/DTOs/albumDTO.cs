@@ -18,7 +18,6 @@ namespace musicParser.MetalArchives
     {
         public string title { get; set; }
         public string id { get; set; }
-        public string album_cover { get; set; }
         public string type { get; set; }
         [JsonProperty(PropertyName = "release date")]
         public string release_date { get; set; }

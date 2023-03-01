@@ -184,11 +184,7 @@ namespace musicParser.TagProcess
             Console.WriteLine($"Let's fix {albumInfo.Band} - {albumInfo.Album}");
 
             //Try to get genre from MetalArchives
-            var genreFromMetalArchives = metalArchivesService.GetBandGenre(new AlbumInfoOnDisk()
-            {
-                AlbumName = albumInfo.Album,
-                Band = albumInfo.Band
-            }).Result;
+            var genreFromMetalArchives = metalArchivesService.GetBandGenreAsync(albumInfo.Band, albumInfo.Album).Result;
 
             var genreFromSpotify = spotifyService.GetArtistGenreUsingAlbum(albumInfo.Band, albumInfo.Album);
 

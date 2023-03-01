@@ -1,6 +1,6 @@
-﻿using musicParser.DTO;
-using musicParser.Utils.Loggers;
-using System.Net;
+﻿using musicParser.Utils.Loggers;
+using MusicParser.Utils.HttpClient;
+using Newtonsoft.Json;
 
 namespace musicParser.MetalArchives
 {
@@ -8,17 +8,19 @@ namespace musicParser.MetalArchives
     {
         private readonly IMetalArchivesAPI metalArchivesAPI;
         private readonly IExecutionLogger _logger;
+        private readonly IHttpClient httpClient;
 
         public MetalArchivesService(
             IExecutionLogger logger,
-            IMetalArchivesAPI metalAPI)
+            IMetalArchivesAPI metalAPI,
+            IHttpClient http)
         {
             metalArchivesAPI = metalAPI;
             _logger = logger;
+            httpClient = http;
         }
 
-        [Obsolete]
-        public async Task<byte[]?> DownloadAlbumCover(string band, string albumToSearch)
+        public async Task<byte[]?> DownloadAlbumCoverAsync(string band, string albumToSearch)
         {
             try
             {
@@ -29,8 +31,7 @@ namespace musicParser.MetalArchives
                     return null;
                 }
 
-                using WebClient webClient = new();
-                byte[] data = webClient.DownloadData(new Uri(url));
+                byte[] data = await httpClient.GetByteArrayAsync(new Uri(url));
                 return data;
             }
             catch (Exception ex)
@@ -40,35 +41,36 @@ namespace musicParser.MetalArchives
             }
         }
 
-        [Obsolete]
-        public async Task<string> GetAlbumCoverURL(string band, string albumToSearch)
+        private async Task<string?> GetAlbumCoverURL(string band, string albumToSearch)
         {
-            // TODO - returning null as I don't have a way to download the image yet
-            return await Task.FromResult(string.Empty);
+            try
+            {
+                var albumResult = await GetAlbum(band, albumToSearch);
 
-            //try
-            //{
-            //    var albumResult = await GetAlbum(band, albumToSearch);
+                if(albumResult == null)
+                {
+                    return null;
+                }
 
-            //    if (albumResult != null)
-            //    {
-            //        //Get all the album information
-            //        //var response = await metalArchivesAPI.GetAlbumByID(albumResult.id);
-            //        string response = null;
-
-            //        var albumRetrieved = Newtonsoft.Json.JsonConvert.DeserializeObject<AlbumDTO>(response);
-
-            //        return albumRetrieved.data.album.album_cover;
-            //    }
-            //    return null;
-            //}
-            //catch (Exception)
-            //{
-            //    return null;
-            //}
+                return await GetAlbumCoverURL(albumResult.id);
+            }
+            catch (Exception ex)
+            {
+                _logger.Log($"Error trying to get Album cover from MetalArchives: {ex.Message}");
+                return null;
+            }
         }
 
-        public async Task<string?> GetAlbumYear(string band, string albumToSearch)
+        private async Task<string?> GetAlbumCoverURL(string albumId)
+        {
+            var stringResponse = await metalArchivesAPI.GetAlbumCoverUrl(albumId);
+
+            var response = JsonConvert.DeserializeObject<searchAlbumCoverResponse>(stringResponse);
+
+            return response?.data?.album.coverUrl;
+        }
+
+        public async Task<string?> GetAlbumYearAsync(string band, string albumToSearch)
         {
             try
             {
@@ -83,7 +85,7 @@ namespace musicParser.MetalArchives
             }            
         }
 
-        public async Task<string> GetBandCountry(string bandName, string? albumName = null)
+        public async Task<string> GetBandCountryAsync(string bandName, string? albumName = null)
         {
             try
             {
@@ -100,7 +102,7 @@ namespace musicParser.MetalArchives
                     foreach (var band in results)
                     {
                         var response = metalArchivesAPI.GetBandDiscography(band.Id).Result;
-                        var bandDiscographyRetrieved = Newtonsoft.Json.JsonConvert.DeserializeObject<searchDiscographyResponse>(response);
+                        var bandDiscographyRetrieved = JsonConvert.DeserializeObject<searchDiscographyResponse>(response);
 
                         var matchedAlbum = bandDiscographyRetrieved?.data?.discography?.FirstOrDefault(x => string.Equals(x.name, albumName, StringComparison.InvariantCultureIgnoreCase));
 
@@ -120,11 +122,11 @@ namespace musicParser.MetalArchives
             }
         }
 
-        public async Task<string> GetBandGenre(AlbumInfoOnDisk albumInfo)
+        public async Task<string> GetBandGenreAsync(string bandName, string? albumName = null)
         {
             try
             {
-                var results = await SearchBandByName(albumInfo.Band);
+                var results = await SearchBandByName(bandName);
 
                 if (results.Length == 1)
                 {
@@ -132,14 +134,14 @@ namespace musicParser.MetalArchives
                 }
 
                 //More than 1 result...lets try to filter by album
-                else if (results.Length > 1)
+                else if (results.Length > 1 && !string.IsNullOrEmpty(albumName))
                 {
                     foreach (var band in results)
                     {
                         var response = metalArchivesAPI.GetBandDiscography(band.Id).Result;
-                        var bandDiscographyRetrieved = Newtonsoft.Json.JsonConvert.DeserializeObject<searchDiscographyResponse>(response);
+                        var bandDiscographyRetrieved = JsonConvert.DeserializeObject<searchDiscographyResponse>(response);
 
-                        var matchedAlbum = bandDiscographyRetrieved?.data?.discography?.FirstOrDefault(x => string.Equals(x.name, albumInfo.AlbumName, StringComparison.InvariantCultureIgnoreCase));
+                        var matchedAlbum = bandDiscographyRetrieved?.data?.discography?.FirstOrDefault(x => string.Equals(x.name, albumName, StringComparison.InvariantCultureIgnoreCase));
 
                         if (matchedAlbum != null)
                         {
@@ -162,9 +164,9 @@ namespace musicParser.MetalArchives
             band = band.Replace(" ", "%20");
             var stringResponse = await metalArchivesAPI.Search("name", band);
 
-            var response = Newtonsoft.Json.JsonConvert.DeserializeObject<searchBandResponse>(stringResponse);
+            var response = JsonConvert.DeserializeObject<searchBandResponse>(stringResponse);
 
-            return response != null && response.data != null && response.data.bands != null ? response.data.bands : Array.Empty<BandResult>();
+            return response?.data?.bands ?? Array.Empty<BandResult>();
         }
 
         private async Task<AlbumResult?> GetAlbum(string band, string album)
@@ -175,7 +177,7 @@ namespace musicParser.MetalArchives
             {
                 //Get all the band information from the search results
                 var response = metalArchivesAPI.GetBandDiscography(bandResult.Id).Result;
-                var bandDiscography = Newtonsoft.Json.JsonConvert.DeserializeObject<searchDiscographyResponse>(response);
+                var bandDiscography = JsonConvert.DeserializeObject<searchDiscographyResponse>(response);
 
                 //Check if this band has the specified album
                 var matchedAlbum = bandDiscography?.data?.discography?
