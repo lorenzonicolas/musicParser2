@@ -104,7 +104,7 @@ namespace musicParser.Metadata
         private MetadataDto GenerateNewBand(AlbumInfoOnDisk albumInfo)
         {
             // Este deberia ser mas inteligente. Si no saca el pais, ver de sacarlo de Spotify
-            var country = MetalArchivesService.GetBandCountry(albumInfo.Band, albumInfo.AlbumName).Result;
+            var country = MetalArchivesService.GetBandCountryAsync(albumInfo.Band, albumInfo.AlbumName).Result;
              
             if(string.IsNullOrEmpty(country) || string.Equals(country, "Unknown", StringComparison.InvariantCultureIgnoreCase))
             {

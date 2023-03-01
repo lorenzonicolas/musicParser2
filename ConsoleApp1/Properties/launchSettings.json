@@ -18,6 +18,10 @@
     "CountryFix": {
       "commandName": "Project",
       "commandLineArgs": "countryFix"
+    },
+    "DownloadAlbumCover": {
+      "commandName": "Project",
+      "commandLineArgs": "downloadAlbumCover"
     }
   }
 }
