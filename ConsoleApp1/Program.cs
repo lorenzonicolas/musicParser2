@@ -24,7 +24,7 @@ namespace musicParser
     {
         public static IConfigurationRoot Configuration { get; private set; }
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             using IHost host = CreateHostBuilder(args).Build();
 
@@ -53,6 +53,10 @@ namespace musicParser
                 else if (arguments.Contains("resync"))
                 {
                     ActivatorUtilities.CreateInstance<SyncLifecycle>(host.Services).Execute(folderToProcess);
+                }
+                else if (arguments.Contains("downloadAlbumCover"))
+                {
+                    await ActivatorUtilities.CreateInstance<DownloadAlbumCoverProcess>(host.Services).Execute();
                 }
                 else
                 {

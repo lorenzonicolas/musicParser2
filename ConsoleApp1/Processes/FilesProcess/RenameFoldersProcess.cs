@@ -310,7 +310,7 @@ namespace musicParser.Processes.FilesProcess
                     }
                     else
                     {
-                        var yearFromMetalArchives = metalArchivesService.GetAlbumYear(folderInfo.Band, folderInfo.Album).Result;
+                        var yearFromMetalArchives = metalArchivesService.GetAlbumYearAsync(folderInfo.Band, folderInfo.Album).Result;
 
                         if (TagsUtils.IsValidYear(yearFromMetalArchives))
                         {
