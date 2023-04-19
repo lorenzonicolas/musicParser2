@@ -26,6 +26,9 @@ namespace musicParser
 
         static async Task Main(string[] args)
         {
+            Console.OutputEncoding = System.Text.Encoding.Unicode;
+            Console.InputEncoding = System.Text.Encoding.Unicode;
+
             using IHost host = CreateHostBuilder(args).Build();
 
             //await host.RunAsync();
