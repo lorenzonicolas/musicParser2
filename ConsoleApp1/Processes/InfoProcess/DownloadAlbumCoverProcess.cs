@@ -18,19 +18,16 @@ namespace MusicParser.Processes.InfoProcess
 
         public async Task Execute()
         {
-            string? band = "", album = "";
-
             Console.Clear();
             Console.WriteLine("\tAlbum cover downloader\n");
 
             Console.Write("Band (or `Exit` to quit): ");
-            band = Console.ReadLine();
+            string? band = Console.ReadLine();
 
-            while (!band.Equals("exit", StringComparison.InvariantCultureIgnoreCase))
+            while (band!= null && !band.Equals("exit", StringComparison.InvariantCultureIgnoreCase))
             {
                 Console.Write("Album name: ");
-                album = Console.ReadLine();
-
+                string? album = Console.ReadLine();
                 Console.WriteLine($"\nTrying to get {album} folder image...");
                 var bytes = await metadataService.DownloadAlbumCoverAsync(band, album);
 
