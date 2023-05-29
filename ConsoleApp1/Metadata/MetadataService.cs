@@ -58,7 +58,12 @@ namespace musicParser.Metadata
                     .Select(y => y.First());
 
                 metadata.AddRange(newBands);
-                metadata.Sort();
+
+                // Sort metadata by band name
+                metadata.Sort((a, b) =>
+                {
+                    return string.Compare(a.Band, b.Band);
+                });
                 updateNeeded = true;
             }
 
