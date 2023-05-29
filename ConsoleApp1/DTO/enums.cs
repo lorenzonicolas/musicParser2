@@ -41,6 +41,7 @@
         Error,
         Information,
         Process,
-        Success
+        Success,
+        Warning
     }
 }

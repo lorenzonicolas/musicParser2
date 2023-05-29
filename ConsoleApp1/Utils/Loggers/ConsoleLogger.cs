@@ -21,6 +21,9 @@ namespace musicParser.Utils.Loggers
                 case LogType.Success:
                     Console.ForegroundColor = ConsoleColor.Green;
                     break;
+                case LogType.Warning:
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    break;
                 case LogType.Process:
                     break;
 
