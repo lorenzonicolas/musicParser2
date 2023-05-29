@@ -296,7 +296,18 @@ namespace musicParser.TagProcess
 
         private bool CheckAlbumName(IDirectoryInfo folder, FolderInfo albumInfo, IList<string> albumNamesFound)
         {
-            IList<string> differenceBase = new List<string>() { "(LimitedEdition)", "(Single)", "/", "......", "...", "." };
+            IList<string> differenceBase = new List<string>()
+            {
+                "(LimitedEdition)",
+                "(DeluxeEdition)",
+                "(Single)",
+                "/",
+                "......",
+                "...",
+                ".",
+                "(EP)",
+                "[EP]"
+            };
 
             var foundManyAlbumNameTags = albumNamesFound.Count > 1;
             var foundNoAlbumNameTags = albumNamesFound.Count < 1 || (albumNamesFound.Count == 1 && string.IsNullOrEmpty(albumNamesFound[0]));
@@ -313,11 +324,13 @@ namespace musicParser.TagProcess
                 var primary = albumNameFound.Length > albumInfo.Album.Length ? albumNameFound : albumInfo.Album;
                 var secondary = primary == albumInfo.Album ? albumNameFound : albumInfo.Album;
 
+                // Replace every ocurrence in the longest string based on the secondary string
                 foreach (var sub in secondary.Split(' '))
                 {
                     primary = primary.Replace(sub, "");
                 }
 
+                // Check if the remaining differences are already specified to skip in the config string
                 if (differenceBase.Contains(primary.Replace(" ", "")))
                 {
                     solved &= true;
