@@ -57,7 +57,7 @@ namespace musicParser.TagProcess
                     {
                         tagSaveIsNeeded = true;
                         tags.Genres = new string[] { metaGenre };
-                        ConsoleLogger.Log("\tReplaced genre song tag with metadata");
+                        ConsoleLogger.Log("\tReplaced genre song tag with metadata: " + metaGenre);
                     }
                     break;
 
