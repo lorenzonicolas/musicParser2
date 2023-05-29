@@ -44,6 +44,7 @@ namespace MusicParser.Tests.Utils.Regex
         [TestCase("10-title.mp3", 10, "title", "mp3")]
         [TestCase("10- title.mp3", 10, "title", "mp3")]
         [TestCase("10 -title.mp3", 10, "title", "mp3")]
+        [TestCase("12 - Tortured by Disingenuous Light – The Seventh Shrine.mp3\r\n", 12, "Tortured by Disingenuous Light – The Seventh Shrine", "mp3")]
         [Parallelizable(ParallelScope.All)]
         public void GetFileInformation_Success(string fileName, int trackNumber, string title, string extension)
         {
@@ -79,6 +80,7 @@ namespace MusicParser.Tests.Utils.Regex
         [TestCase("1990 - Album name (Live Tokyo '92)", 1990, "Album name (Live Tokyo '92)", null)]
         [TestCase("1990 - Album name [Live Tokyo '92]", 1990, "Album name [Live Tokyo '92]", null)]
         [TestCase("1990 - Album name [Live Tokyo '92] (With Bonus)", 1990, "Album name [Live Tokyo '92] (With Bonus)", null)]
+        [TestCase("2023 - As in Gardens, So in Tombs", 2023, "As in Gardens, So in Tombs", null)]
         [Parallelizable(ParallelScope.All)]
         public void GetFolderInformation_NoBand_Success(string folderName, int year, string album, string band)
         {
@@ -95,6 +97,7 @@ namespace MusicParser.Tests.Utils.Regex
         [TestCase("Spirit Adrift - Divided by Darkness (2019) [320]", 2019, "Divided by Darkness", "Spirit Adrift")]
         [TestCase("Satyricon & Darkthrone- Live In Wacken (2004)", 2004, "Live In Wacken", "Satyricon & Darkthrone")]
         [TestCase("Nordjevel - Necrogenesis (Limited Edition) (2019)", 2019, "Necrogenesis (Limited Edition)", "Nordjevel")]
+        [TestCase("...and Oceans - As in Gardens, So in Tombs (Deluxe Editon) (2023)", 2023, "As in Gardens, So in Tombs (Deluxe Editon)", "...and Oceans")]
         [TestCase("Suffocation - Pierced From Within", null, "Pierced From Within", "Suffocation")]
         [TestCase("Pierced From Within", null, "Pierced From Within", null)]
         [Parallelizable(ParallelScope.All)]
