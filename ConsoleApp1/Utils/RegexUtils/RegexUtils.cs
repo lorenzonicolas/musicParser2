@@ -1,6 +1,5 @@
 ﻿using musicParser.DTO;
 using musicParser.Utils.Loggers;
-using System;
 using System.Text.RegularExpressions;
 
 namespace musicParser.Utils.Regex
@@ -17,15 +16,16 @@ namespace musicParser.Utils.Regex
             ExecutionLogger = executionLogger;
         }
 
+        private const string songsRegex = @"(\d{2})(?>\s?[-.]*\s*)((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ….,()\[\]';‘’´!\-–]+\s*)+)(?>\.{1})([\w]+)";
+        private const string regex_Band_Album_Year = @"((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ….,'&]+\s?)+)(?<! )\s*-{1}\s*((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ…,'&^\-()\.]+\s?)+) \(*([0-9]{4})\)*";
+        private const string regex_Year_Album = @"^([\d]{4})(?:\)*\s*-*\s*)((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ…,'&()\[\-\.\]]+\s?)+)(?<! )";
+        private const string regex_Band_Album = @"^((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ….,'&]+\s?)+)(?<! )\s*-\s*((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ…,'&()-]+\s?)+)(?<! )";
+        private const string regex_band_year_album = @"((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ….,'&]+\s?)+)(?<! )\s*-{1}\s*\(*([0-9]{4})\)*\s*-{1}\s*((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ…,'&^\-()\.]+\s?)+)";
+
         public FolderInfo GetFolderInformation(string folderName)
         {
             var result = new FolderInfo();
             Match matchRegex;
-
-            var regex_Band_Album_Year = @"((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ…'&]+\s?)+)(?<! )\s*-{1}\s*((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ…'&^\-()\.]+\s?)+) \(*([0-9]{4})\)*";
-            var regex_Year_Album = @"^([\d]{4})(?:\)*\s*-*\s*)((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ…'&()\[\-\.\]]+\s?)+)(?<! )";
-            var regex_Band_Album = @"^((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ…'&]+\s?)+)(?<! )\s*-\s*((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ…'&()-]+\s?)+)(?<! )";
-            var regex_band_year_album = @"((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ…'&]+\s?)+)(?<! )\s*-{1}\s*\(*([0-9]{4})\)*\s*-{1}\s*((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ…'&^\-()\.]+\s?)+)";
 
             try
             {
@@ -97,9 +97,6 @@ namespace musicParser.Utils.Regex
             try
             {
                 var result = new SongInfo();
-
-                var songsRegex = @"(\d{2})(?>\s?[-.]*\s*)((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ…()\[\]';‘’´!-\.]+\s*)+)(?>\.{1})([\w]+)";
-
                 var match = RunRegex(fileName, songsRegex);
 
                 if (match.Success)
