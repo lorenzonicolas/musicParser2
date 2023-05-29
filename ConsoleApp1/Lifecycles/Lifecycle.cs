@@ -108,7 +108,7 @@ namespace musicParser.Processes
                     else
                     {
                         parsedFolder = FileSystemUtils.MoveProcessedFolder(parsedFolder, TAG_DIR);
-                        ConsoleLogger.Log("Moved to TAG_FIX", LogType.Information);
+                        ConsoleLogger.Log("Moved to TAG_FIX", LogType.Warning);
                     }
 
                     loggerInstance.ExportLogFile(parsedFolder ?? folderToProcess, generateLogOnOK);

@@ -213,6 +213,7 @@ namespace musicParser.Processes.FilesProcess
                     Log($"Retrieved Album from tag: {album}");
                     _logger.Log($"Retrieved Album from tag: {album}");
                     folderInfo.Album = album;
+                    found = true;
                 }
                 else
                 {
