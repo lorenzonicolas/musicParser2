@@ -1,4 +1,5 @@
 ﻿using musicParser.MetalArchives;
+using System.Text.RegularExpressions;
 
 namespace MusicParser.Processes.InfoProcess
 {
@@ -35,7 +36,10 @@ namespace MusicParser.Processes.InfoProcess
                 {
                     Console.WriteLine($"Image found! :)\nSaving folder image to Desktop...");
                     var desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-                    File.WriteAllBytes(Path.Combine(desktop, $"FRONT_{band}_{album}.jpg"), bytes);
+
+                    var fileName = MakeValidFileName($"FRONT_{band}_{album}.jpg");
+                    var destiny = Path.Combine(desktop, fileName);
+                    File.WriteAllBytes(destiny, bytes);
                     Console.WriteLine($"Album {album} cover successfully saved.\n");
                 }
                 else
@@ -46,6 +50,14 @@ namespace MusicParser.Processes.InfoProcess
                 Console.Write("Band (or `Exit` to quit): ");
                 band = Console.ReadLine();
             }
+        }
+
+        private static string MakeValidFileName(string name)
+        {
+            string invalidChars = Regex.Escape(new string(Path.GetInvalidFileNameChars()));
+            string invalidRegStr = string.Format(@"([{0}]*\.+$)|([{0}]+)", invalidChars);
+
+            return Regex.Replace(name, invalidRegStr, "_");
         }
     }
 }
