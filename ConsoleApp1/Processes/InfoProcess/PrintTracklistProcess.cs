@@ -33,7 +33,7 @@ namespace MusicParser.Processes.InfoProcess
             $"Genre: BAND_GENRE\n" +
             $"Country: BAND_COUNTRY\n" +
             $"LINK_TO_METALARCHIVES\n" +
-            $"https://www.google.com/search?q=metal+archives+URL_NAME";
+            $"https://duckduckgo.com/?q=%5Csite%3Ametal-archives.com+BAND_NAME";
 
         public PrintTracklistProcess(
             IFileSystemUtils fileSystemUtils,
@@ -120,13 +120,17 @@ namespace MusicParser.Processes.InfoProcess
             try
             {
                 if (value == null)
-                    throw new ArgumentNullException("Attempt to set clipboard with null");
-
-                Process clipboardExecutable = new();
-                clipboardExecutable.StartInfo = new ProcessStartInfo // Creates the process
                 {
-                    RedirectStandardInput = true,
-                    FileName = @"clip",
+                    throw new ArgumentNullException("Attempt to set clipboard with null");
+                }
+
+                Process clipboardExecutable = new()
+                {
+                    StartInfo = new ProcessStartInfo // Creates the process
+                    {
+                        RedirectStandardInput = true,
+                        FileName = @"clip",
+                    }
                 };
                 clipboardExecutable.Start();
 
