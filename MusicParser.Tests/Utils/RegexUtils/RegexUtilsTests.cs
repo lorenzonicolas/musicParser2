@@ -45,6 +45,7 @@ namespace MusicParser.Tests.Utils.Regex
         [TestCase("10- title.mp3", 10, "title", "mp3")]
         [TestCase("10 -title.mp3", 10, "title", "mp3")]
         [TestCase("12 - Tortured by Disingenuous Light – The Seventh Shrine.mp3\r\n", 12, "Tortured by Disingenuous Light – The Seventh Shrine", "mp3")]
+        [TestCase("10 - Pentagram & Wood.mp3", 10, "Pentagram & Wood", "mp3")]
         [Parallelizable(ParallelScope.All)]
         public void GetFileInformation_Success(string fileName, int trackNumber, string title, string extension)
         {
