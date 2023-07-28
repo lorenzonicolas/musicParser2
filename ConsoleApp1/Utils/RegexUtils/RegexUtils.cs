@@ -16,7 +16,7 @@ namespace musicParser.Utils.Regex
             ExecutionLogger = executionLogger;
         }
 
-        private const string songsRegex = @"(\d{2})(?>\s?[-.]*\s*)((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ….,()\[\]';‘’´!\-–]+\s*)+)(?>\.{1})([\w]+)";
+        private const string songsRegex = @"(\d{2})(?>\s?[-.]*\s*)((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ….,'&()\[\];‘’´!\-–]+\s*)+)(?>\.{1})([\w]+)";
         private const string regex_Band_Album_Year = @"((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ….,'&]+\s?)+)(?<! )\s*-{1}\s*((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ…,'&^\-()\.]+\s?)+) \(*([0-9]{4})\)*";
         private const string regex_Year_Album = @"^([\d]{4})(?:\)*\s*-*\s*)((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ…,'&()\[\-\.\]]+\s?)+)(?<! )";
         private const string regex_Band_Album = @"^((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ….,'&]+\s?)+)(?<! )\s*-\s*((?:[\wÑñáéíóúÁÉÍÓÚäöüÅÖÜ…,'&()-]+\s?)+)(?<! )";
