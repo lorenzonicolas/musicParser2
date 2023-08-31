@@ -3,6 +3,7 @@ using musicParser.Utils.FileSystemUtils;
 using musicParser.Utils.Regex;
 using System.Diagnostics;
 using System.IO.Abstractions;
+using System.Text;
 
 namespace MusicParser.Processes.InfoProcess
 {
@@ -130,6 +131,7 @@ namespace MusicParser.Processes.InfoProcess
                     {
                         RedirectStandardInput = true,
                         FileName = @"clip",
+                        StandardInputEncoding = Encoding.Unicode
                     }
                 };
                 clipboardExecutable.Start();
