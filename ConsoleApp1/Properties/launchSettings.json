@@ -1,9 +1,5 @@
 {
   "profiles": {
-    "WSL": {
-      "commandName": "WSL2",
-      "distributionName": ""
-    },
     "PrintTracklist": {
       "commandName": "Project",
       "commandLineArgs": "printTracklist"
