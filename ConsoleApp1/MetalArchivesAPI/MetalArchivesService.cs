@@ -175,18 +175,25 @@ namespace musicParser.MetalArchives
 
             foreach (var bandResult in results)
             {
-                //Get all the band information from the search results
-                var response = metalArchivesAPI.GetBandDiscography(bandResult.Id).Result;
-                var bandDiscography = JsonConvert.DeserializeObject<searchDiscographyResponse>(response);
-
-                //Check if this band has the specified album
-                var matchedAlbum = bandDiscography?.data?.discography?
-                    .FirstOrDefault(x => string.Equals(x.name, album, StringComparison.InvariantCultureIgnoreCase));
-
-                if (matchedAlbum != null)
+                try
                 {
-                    return matchedAlbum;
+                    // Get all the band information from the search results
+                    var response = metalArchivesAPI.GetBandDiscography(bandResult.Id).Result;
+                    var bandDiscography = JsonConvert.DeserializeObject<searchDiscographyResponse>(response);
+
+                    // Check if this band has the specified album
+                    var matchedAlbum = bandDiscography?.data?.discography?
+                        .FirstOrDefault(x => string.Equals(x.name, album, StringComparison.InvariantCultureIgnoreCase));
+
+                    if (matchedAlbum != null)
+                    {
+                        return matchedAlbum;
+                    }
                 }
+                catch (Exception ex)
+                {
+                    _logger.Log($"Error trying to get this band discography. Will skip this band ({bandResult.Name}) in order to get the album. Error: {ex.Message}");
+                }                
             }
 
             return null;
