@@ -1,4 +1,4 @@
-﻿using musicParser.DTO;
+﻿using DTO;
 using musicParser.Utils.Loggers;
 using System.IO.Abstractions;
 

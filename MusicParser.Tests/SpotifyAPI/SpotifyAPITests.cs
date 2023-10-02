@@ -1,12 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Net;
+using Microsoft.Extensions.Configuration;
 using Moq;
-using musicParser.DTO;
 using musicParser.Spotify;
 using musicParser.Spotify.DTOs;
-using musicParser.Utils.Regex;
 using MusicParser.Utils.HttpClient;
 using Newtonsoft.Json;
-using System.Net;
+using Regex;
 
 namespace MusicParser.Tests.SpotifyAPI
 {

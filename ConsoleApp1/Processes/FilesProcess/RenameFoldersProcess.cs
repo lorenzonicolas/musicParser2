@@ -1,11 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using DTO;
+using FileSystem;
+using Microsoft.Extensions.Configuration;
 using musicParser.DTO;
 using musicParser.MetalArchives;
 using musicParser.Spotify;
 using musicParser.TagProcess;
-using musicParser.Utils.FileSystemUtils;
 using musicParser.Utils.Loggers;
-using musicParser.Utils.Regex;
+using Regex;
 using System.IO.Abstractions;
 
 namespace musicParser.Processes.FilesProcess

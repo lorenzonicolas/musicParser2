@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace musicParser.DTO
+﻿namespace musicParser.DTO
 {
     public class Album
     {

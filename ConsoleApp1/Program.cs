@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using FileSystem;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using musicParser.GoogleDrive;
@@ -9,11 +10,10 @@ using musicParser.Processes.FilesProcess;
 using musicParser.Processes.InfoProcess;
 using musicParser.Spotify;
 using musicParser.TagProcess;
-using musicParser.Utils.FileSystemUtils;
 using musicParser.Utils.Loggers;
-using musicParser.Utils.Regex;
 using MusicParser.Processes.InfoProcess;
 using MusicParser.Utils.HttpClient;
+using Regex;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
 
@@ -92,8 +92,8 @@ namespace musicParser
                 services.AddSingleton<IExecutionLogger, ExecutionLogger>();
                 services.AddSingleton<IRegexUtils, RegexUtils>();
                 services.AddSingleton<ITagsUtils, TagsUtils>();
-                services.AddSingleton<IFileSystem, FileSystem>();
-                services.AddSingleton<IFileSystemUtils, FileSystemUtils>();
+                services.AddSingleton<IFileSystem, System.IO.Abstractions.FileSystem>();
+                services.AddSingleton<IFileSystemUtils, SomeUtils>();
                 services.AddSingleton<IMetadataService, MetadataService>();
                 services.AddSingleton<IMetalArchivesAPI, MetalArchivesAPI>();
                 services.AddSingleton<IMetalArchivesService, MetalArchivesService>();

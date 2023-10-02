@@ -1,7 +1,5 @@
-﻿using musicParser.DTO;
-using System;
-using System.IO;
-using System.IO.Abstractions;
+﻿using System.IO.Abstractions;
+using DTO;
 using TagLib;
 
 namespace musicParser.TagProcess

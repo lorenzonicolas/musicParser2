@@ -1,6 +1,6 @@
-﻿using musicParser.Metadata;
-using musicParser.Utils.FileSystemUtils;
-using musicParser.Utils.Regex;
+﻿using FileSystem;
+using musicParser.Metadata;
+using Regex;
 using System.Diagnostics;
 using System.IO.Abstractions;
 using System.Text;

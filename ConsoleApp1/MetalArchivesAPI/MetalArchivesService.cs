@@ -22,6 +22,11 @@ namespace musicParser.MetalArchives
 
         public async Task<byte[]?> DownloadAlbumCoverAsync(string band, string albumToSearch)
         {
+            if(string.IsNullOrEmpty(band) || string.IsNullOrEmpty(albumToSearch))
+            {
+                return null;
+            }
+            
             try
             {
                 var url = await GetAlbumCoverURL(band, albumToSearch);

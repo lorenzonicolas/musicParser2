@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace musicParser.DTO
+﻿namespace musicParser.DTO
 {
     public class AlbumInfoBackupDto
     {
