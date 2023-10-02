@@ -179,7 +179,7 @@ namespace musicParser.TagProcess
 
         public string GetAlbumGenre(string fullPath)
         {
-            return GetAlbumGenreFromTag(FS.DirectoryInfo.FromDirectoryName(fullPath));
+            return GetAlbumGenreFromTag(FS.DirectoryInfo.New(fullPath));
         }
 
         public byte[]? GetCover(IFileInfo[] files)
@@ -318,7 +318,7 @@ namespace musicParser.TagProcess
 
         public SongInfo GetFileInformation(IFileInfo file)
         {
-            var info = new SongInfo();
+            var info = new SongInfo("","","");
 
             using (var tagFile = TagLib.File.Create(file.FullName))
             {
