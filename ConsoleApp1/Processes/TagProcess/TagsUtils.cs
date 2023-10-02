@@ -1,5 +1,6 @@
-﻿using musicParser.DTO;
-using musicParser.Utils.FileSystemUtils;
+﻿using DTO;
+using FileSystem;
+using musicParser.DTO;
 using musicParser.Utils.Loggers;
 using System.IO.Abstractions;
 

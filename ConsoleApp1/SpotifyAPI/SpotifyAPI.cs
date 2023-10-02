@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using musicParser.Spotify.DTOs;
-using musicParser.Utils.Regex;
 using MusicParser.Utils.HttpClient;
 using Newtonsoft.Json;
+using Regex;
 using System.Net;
 using System.Text;
 

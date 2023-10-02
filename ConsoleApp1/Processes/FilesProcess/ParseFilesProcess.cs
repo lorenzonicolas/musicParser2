@@ -1,14 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using FileSystem;
+using Microsoft.Extensions.Configuration;
 using musicParser.DTO;
 using musicParser.MetalArchives;
 using musicParser.Spotify;
 using musicParser.TagProcess;
-using musicParser.Utils.FileSystemUtils;
 using musicParser.Utils.Loggers;
-using musicParser.Utils.Regex;
-using System;
-using System.Configuration;
-using System.IO;
+using Regex;
 using System.IO.Abstractions;
 
 namespace musicParser.Processes.FilesProcess
@@ -142,7 +139,7 @@ namespace musicParser.Processes.FilesProcess
         {
             try
             {
-                var albumCover = FileSystemUtils.GetAlbumCover(cdFolder, _logger);
+                var albumCover = FileSystemUtils.GetAlbumCover(cdFolder);
 
                 if (albumCover != null)
                 {

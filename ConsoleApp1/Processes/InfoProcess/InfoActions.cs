@@ -1,9 +1,9 @@
-﻿using musicParser.DTO;
+﻿using FileSystem;
+using musicParser.DTO;
 using musicParser.GoogleDrive;
 using musicParser.Metadata;
-using musicParser.Utils.FileSystemUtils;
 using musicParser.Utils.Loggers;
-using musicParser.Utils.Regex;
+using Regex;
 using System.Collections.Concurrent;
 using System.IO.Abstractions;
 

@@ -1,10 +1,10 @@
-﻿using musicParser.DTO;
+﻿using DTO;
+using FileSystem;
 using musicParser.Metadata;
 using musicParser.MetalArchives;
 using musicParser.Spotify;
-using musicParser.Utils.FileSystemUtils;
 using musicParser.Utils.Loggers;
-using musicParser.Utils.Regex;
+using Regex;
 using System.IO.Abstractions;
 
 namespace musicParser.TagProcess
