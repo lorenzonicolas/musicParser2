@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace musicParser.MetalArchives
+﻿namespace musicParser.MetalArchives
 {
     public interface IMetalArchivesAPI
     {

@@ -28,8 +28,7 @@ namespace musicParser.Processes
             catch (Exception ex)
             {
                 loggerInstance.Log("-Execution terminated because of error- " + ex.Message, DTO.LogType.Error);
-            }
-            
+            }            
         }
     }
 }

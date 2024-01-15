@@ -137,12 +137,12 @@ namespace musicParser.Metadata
                 .Where(x => x.Genre == null || x.Genre.Equals("Unknown", StringComparison.InvariantCultureIgnoreCase))
                 .Select(x => x.Band);
 
-            if (nullCountries.Count() > 0)
+            if (nullCountries.Any())
             {
                 ConsoleLogger.Log(string.Format("Unknown band countries: {0}", string.Join(", ", nullCountries)), LogType.Error);
             }
 
-            if (nullGenres.Count() > 0)
+            if (nullGenres.Any())
             {
                 ConsoleLogger.Log(string.Format("Unknown band genres: {0}", string.Join(", ", nullGenres)), LogType.Error);
             }

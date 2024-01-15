@@ -61,7 +61,7 @@ namespace musicParser.Processes
 
             foreach (var folder in inputFolders)
             {
-                // Ensure that every folder processes is an album folder only, not artists.
+                // Ensure that every folder processed is an album folder only, not artists.
                 if (FileSystemUtils.IsArtistFolder(folder))
                 {
                     this.Execute(folder.FullName, generateLogOnOK);
