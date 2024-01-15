@@ -64,7 +64,7 @@ namespace musicParser.TagProcess
         /// <returns>True if needs manual fix (at least one tag is not OK)</returns>
         public object Execute(string folderToProcess)
         {
-            var folderInfo = FS.DirectoryInfo.FromDirectoryName(folderToProcess);
+            var folderInfo = FS.DirectoryInfo.New(folderToProcess);
 
             if (FileSystemUtils.IsArtistFolder(folderInfo))
             {
@@ -111,6 +111,11 @@ namespace musicParser.TagProcess
         private bool ProcessAsAlbumFolder(IDirectoryInfo album)
         {
             var needManualFix = false;
+
+            if(album.Parent == null)
+            {
+                throw new Exception("Parent folder is null");
+            }
 
             try
             {

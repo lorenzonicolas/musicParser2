@@ -55,7 +55,7 @@ namespace musicParser.Processes.FilesProcess
         public object Execute(string folderToProcess)
         {
             var movedToManualQueue = true;
-            var folderInfo = fs.DirectoryInfo.FromDirectoryName(folderToProcess);
+            var folderInfo = fs.DirectoryInfo.New(folderToProcess);
 
             if (FileSystemUtils.IsArtistFolder(folderInfo))
             {
@@ -174,6 +174,11 @@ namespace musicParser.Processes.FilesProcess
         {
             var found = false;
 
+            if(cdFolder.Parent == null)
+            {
+                throw new Exception("Parent folder is null");
+            }
+
             //Get from tags
             var imageTagBytes = TagsUtils.GetCover(songs);
 
@@ -275,8 +280,13 @@ namespace musicParser.Processes.FilesProcess
             return success;
         }
 
-        public void RenameSong(string trackNumber, string title, string extension, IFileInfo file)
-        {            
+        private void RenameSong(string trackNumber, string title, string extension, IFileInfo file)
+        {
+            if(file == null || file.DirectoryName == null)
+            {
+                throw new ArgumentNullException(nameof(file));
+            }
+
             var correctFileFormat = string.Format("{0} - {1}.{2}", trackNumber, title, extension);
             var destinationPath = Path.Combine(file.DirectoryName, correctFileFormat);
 

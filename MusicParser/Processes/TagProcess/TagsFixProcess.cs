@@ -47,7 +47,7 @@ namespace musicParser.TagProcess
 
         public object Execute(string folderToProcess)
         {
-            var folder = FS.DirectoryInfo.FromDirectoryName(folderToProcess);
+            var folder = FS.DirectoryInfo.New(folderToProcess);
 
             if (FileSystemUtils.IsAlbumFolder(folder))
             {
@@ -75,7 +75,7 @@ namespace musicParser.TagProcess
             {
                 var albumInfo = RegexUtils.GetFolderInformation(album.Name);
 
-                if (!string.IsNullOrEmpty(overrideBandName))
+                if (!string.IsNullOrEmpty(overrideBandName) && album.Parent != null)
                 {
                     albumInfo.Band = album.Parent.Name;
                 }

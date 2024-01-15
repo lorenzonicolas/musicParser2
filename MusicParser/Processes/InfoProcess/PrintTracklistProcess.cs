@@ -68,9 +68,9 @@ namespace MusicParser.Processes.InfoProcess
                     return;
                 }
 
-                var directory = FS.DirectoryInfo.FromDirectoryName(fullPath);
+                var directory = FS.DirectoryInfo.New(fullPath);
 
-                if (!utils.IsAlbumFolder(directory))
+                if (directory == null || directory.Parent == null || !utils.IsAlbumFolder(directory))
                 {
                     Console.WriteLine($"This is not recognized as an album folder: {fullPath}");
                     return;
