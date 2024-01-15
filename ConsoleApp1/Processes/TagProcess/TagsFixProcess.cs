@@ -230,7 +230,7 @@ namespace musicParser.TagProcess
 
             if (manyGenresFound)
             {
-                Console.WriteLine($"Found multiple genres on tags and has no Metadata in Drive.\nTags: {genresFound}");
+                Console.WriteLine($"Found multiple genres on tags and has no Metadata in Drive.\nTags: {string.Join(',', genresFound)}");
             }
             else if (noGenreFound)
             {
