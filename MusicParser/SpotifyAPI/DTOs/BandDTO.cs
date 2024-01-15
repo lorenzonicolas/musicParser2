@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace musicParser.Spotify.DTOs
+﻿namespace musicParser.Spotify.DTOs
 {
     public class BandDTO
     {
