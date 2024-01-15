@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 using System.Diagnostics.CodeAnalysis;
-
+ 
 namespace MusicParser
 {
     [ExcludeFromCodeCoverage]

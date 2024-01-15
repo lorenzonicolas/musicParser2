@@ -57,7 +57,7 @@ namespace musicParser.Processes
         {
             ConsoleLogger.Log("\t\tLIFECYCLE\n\n");
             
-            var inputFolders = fs.DirectoryInfo.FromDirectoryName(folderToProcess).GetDirectories();
+            var inputFolders = fs.DirectoryInfo.New(folderToProcess).GetDirectories();
 
             foreach (var folder in inputFolders)
             {

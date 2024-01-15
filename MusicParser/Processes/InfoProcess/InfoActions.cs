@@ -40,7 +40,14 @@ namespace musicParser.Processes.InfoProcess
 
         public void Sync(string folderPath, bool updateDeletes = false)
         {
-            var folder = FS.DirectoryInfo.FromDirectoryName(folderPath);
+            var folder = FS.DirectoryInfo.New(folderPath);
+
+            if(folder == null || folder.Parent == null)
+            {
+                ConsoleLogger.Log("Null folder or parent", LogType.Error);
+                return;
+            }
+
             var allAlbums = new List<AlbumInfoOnDisk>();
 
             if (FileSystemUtils.IsRootArtistsFolder(folder))

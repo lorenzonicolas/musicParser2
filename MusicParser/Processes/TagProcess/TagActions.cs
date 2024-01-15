@@ -20,8 +20,15 @@ namespace musicParser.TagProcess
             }
         }
 
-        public void RenameSong(string trackNumber, string title, string extension, IFileInfo file)
+        private void RenameSong(string trackNumber, string title, string extension, IFileInfo file)
         {
+            if (file == null || file.DirectoryName == null)
+            {
+                _logger.LogError("Invalid file, couldn't rename song");
+                Log("Invalid file, couldn't rename song");
+                return;
+            }
+
             var correctFileFormat = string.Format("{0} - {1}.{2}", trackNumber, title, extension);
             var destinationPath = Path.Combine(file.DirectoryName, correctFileFormat);
 

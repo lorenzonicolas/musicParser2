@@ -68,7 +68,7 @@ namespace musicParser.Processes.FilesProcess
                 _logger.Log($"Moving '{folderToProcess}' to processing dir ({WORKING_DIR})");
 
                 var newPath = FileSystemUtils.CopyFolder(folderToProcess, WORKING_DIR);
-                var folder = FS.DirectoryInfo.FromDirectoryName(newPath);
+                var folder = FS.DirectoryInfo.New(newPath);
 
                 var folderType = FileSystemUtils.GetFolderType(folder);
                 switch (folderType)
@@ -143,7 +143,7 @@ namespace musicParser.Processes.FilesProcess
                 
                 // Rename the folder to the expected format if needed. i.e. 2020 - AlbumName
                 var newPath = RenameFolder(folder, folderInfo);
-                folder = FS.DirectoryInfo.FromDirectoryName(newPath);
+                folder = FS.DirectoryInfo.New(newPath);
 
                 // If it's only an album folder, let's create the band name folder
                 if (parentBand == null && folderInfo.Band != null)
@@ -171,7 +171,15 @@ namespace musicParser.Processes.FilesProcess
         /// <exception cref="ArgumentNullException"></exception>
         private string RegenerateBandName(IDirectoryInfo albumDirectory, string bandName)
         {
-            if (bandName == null) throw new ArgumentNullException(nameof(bandName));
+            if (bandName == null)
+            {
+                throw new ArgumentNullException(nameof(bandName));
+            }
+
+            if (albumDirectory == null || albumDirectory.Parent == null)
+            {
+                throw new ArgumentNullException(nameof(albumDirectory));
+            }
 
             var bandFullDirectoryName = $"{WORKING_DIR}\\{bandName}";
 
@@ -347,6 +355,11 @@ namespace musicParser.Processes.FilesProcess
             if (folderInfo == null || folderInfo.Album == null || folderInfo.Band == null || folderInfo.Year == null)
             {
                 throw new ApplicationException("Invalid arguments");
+            }
+
+            if(folder.Parent == null)
+            {
+                throw new Exception("Parent folder is null");
             }
 
             try
