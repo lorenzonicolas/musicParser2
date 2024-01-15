@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ConsoleApp1\MusicParser.csproj" />
+    <ProjectReference Include="..\MusicParser\MusicParser.csproj" />
   </ItemGroup>
 
 </Project>
