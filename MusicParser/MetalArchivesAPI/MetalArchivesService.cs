@@ -164,6 +164,21 @@ namespace musicParser.MetalArchives
             return string.Empty;
         }
 
+        public async Task<bool> Healthcheck()
+        {
+            try
+            {
+                // Use a simple search to verify
+                var result = await SearchBandByName("Satyricon");
+
+                return true;
+            }
+            catch(Exception)
+            {
+                return false;
+            }
+        }
+
         private async Task<BandResult[]> SearchBandByName(string band)
         {
             band = band.Replace(" ", "%20");
