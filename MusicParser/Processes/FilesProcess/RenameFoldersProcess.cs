@@ -18,7 +18,7 @@ namespace musicParser.Processes.FilesProcess
         private readonly string WORKING_DIR;
 
         private readonly IMetalArchivesService metalArchivesService;
-        private readonly IExecutionLogger _logger;
+        private readonly IExecutionLogger fileLogger;
         private readonly ISpotifyService spotifyAPI;
         private readonly IFileSystemUtils FileSystemUtils;
         private readonly IRegexUtils RegexUtils;
@@ -38,7 +38,7 @@ namespace musicParser.Processes.FilesProcess
             IConfiguration config)
         {
             metalArchivesService = maService;
-            _logger = logger;
+            fileLogger = logger;
             spotifyAPI = spotify;
             FileSystemUtils = fileSystemUtils;
             RegexUtils = regexUtils;
@@ -65,7 +65,7 @@ namespace musicParser.Processes.FilesProcess
             {
                 // Move the raw folder to the working directory first
                 Log($"Moving '{folderToProcess}' to processing dir ({WORKING_DIR})");
-                _logger.Log($"Moving '{folderToProcess}' to processing dir ({WORKING_DIR})");
+                fileLogger.Log($"Moving '{folderToProcess}' to processing dir ({WORKING_DIR})");
 
                 var newPath = FileSystemUtils.CopyFolder(folderToProcess, WORKING_DIR);
                 var folder = FS.DirectoryInfo.New(newPath);
@@ -93,7 +93,7 @@ namespace musicParser.Processes.FilesProcess
             catch (Exception ex)
             {
                 Log($"RenameFolder Process Error. Folder: {folderToProcess} \nErr msg: {ex.Message}", LogType.Error);
-                _logger.LogError($"RenameFolder Process Error. Folder: {folderToProcess} \nErr msg: {ex.Message}");
+                fileLogger.LogError($"RenameFolder Process Error. Folder: {folderToProcess} \nErr msg: {ex.Message}");
                 throw;
             }
 
@@ -157,7 +157,7 @@ namespace musicParser.Processes.FilesProcess
             {
                 // Something handleable went wrong. Move to manual fix queue.
                 Log("Moved to MANUAL_FIX_DIR from RenameFoldersProcess", LogType.Error);
-                _logger.Log("\tMoving to Manual Fix queue from RenameFoldersProcess");
+                fileLogger.Log("\tMoving to Manual Fix queue from RenameFoldersProcess");
                 return FileSystemUtils.MoveFolder(folder.FullName, MANUAL_FIX_DIR);
             }
         }
@@ -214,20 +214,20 @@ namespace musicParser.Processes.FilesProcess
             if (string.IsNullOrEmpty(folderInfo.Album))
             {
                 Log("\tFolder album name not found, will try to get from tags");
-                _logger.Log("\tFolder album name not found, will try to get from tags");
+                fileLogger.Log("\tFolder album name not found, will try to get from tags");
 
-                string? album = TagsUtils.GetAlbumFromTag(folder, _logger);
+                string? album = TagsUtils.GetAlbumFromTag(folder, fileLogger);
                 if (!string.IsNullOrEmpty(album))
                 {
                     Log($"Retrieved Album from tag: {album}");
-                    _logger.Log($"Retrieved Album from tag: {album}");
+                    fileLogger.Log($"Retrieved Album from tag: {album}");
                     folderInfo.Album = album;
                     found = true;
                 }
                 else
                 {
                     Log($"Couldn't find this folder album name: \"{folder.Name}\"", LogType.Information);
-                    _logger.LogError($"Couldn't find this folder album name: \"{folder.Name}\"");
+                    fileLogger.LogError($"Couldn't find this folder album name: \"{folder.Name}\"");
                 }
             }
             else
@@ -256,19 +256,19 @@ namespace musicParser.Processes.FilesProcess
                 else
                 {
                     Log("\tFolder band name not found, will try to get from tags");
-                    _logger.Log("\tFolder band name not found, will try to get from tags");
-                    string band = TagsUtils.GetArtistFromTag(folder, _logger);
+                    fileLogger.Log("\tFolder band name not found, will try to get from tags");
+                    string band = TagsUtils.GetArtistFromTag(folder, fileLogger);
                     if (!string.IsNullOrEmpty(band))
                     {
                         Log($"Retrieved Artist from tag: {band}");
-                        _logger.Log($"Retrieved Artist from tag: {band}");
+                        fileLogger.Log($"Retrieved Artist from tag: {band}");
                         folderInfo.Band = band;
                         found = true;
                     }
                     else
                     {
                         Log($"Couldn't find this folder artist name: \"{folder.Name}\"");
-                        _logger.LogError($"Couldn't find this folder artist name: \"{folder.Name}\"");
+                        fileLogger.LogError($"Couldn't find this folder artist name: \"{folder.Name}\"");
                     }
                 }
             }
@@ -295,14 +295,14 @@ namespace musicParser.Processes.FilesProcess
             if (string.IsNullOrEmpty(folderInfo.Year))
             {
                 Log("\tFolder year not found, will try to get from tags");
-                _logger.Log("\tFolder year not found, will try to get from tags");
+                fileLogger.Log("\tFolder year not found, will try to get from tags");
 
-                var year = TagsUtils.GetYear(folder, _logger);
+                var year = TagsUtils.GetYear(folder, fileLogger);
 
                 if (year.HasValue && TagsUtils.IsValidYear(year.Value))
                 {
                     Log($"Retrieved year from tag: {year.Value}");
-                    _logger.Log($"Retrieved year from tag: {year.Value}");
+                    fileLogger.Log($"Retrieved year from tag: {year.Value}");
                     folderInfo.Year = year.Value.ToString();
                     found = true;
                 }
@@ -312,7 +312,7 @@ namespace musicParser.Processes.FilesProcess
                     if (TagsUtils.IsValidYear(yearFromSpotify))
                     {
                         Log($"Retrieved year from Spotify: {yearFromSpotify}");
-                        _logger.Log($"Retrieved year from Spotify: {yearFromSpotify}");
+                        fileLogger.Log($"Retrieved year from Spotify: {yearFromSpotify}");
 #pragma warning disable CS8601 // Possible null reference assignment.
                         folderInfo.Year = yearFromSpotify;
 #pragma warning restore CS8601 // Possible null reference assignment.
@@ -325,7 +325,7 @@ namespace musicParser.Processes.FilesProcess
                         if (TagsUtils.IsValidYear(yearFromMetalArchives))
                         {
                             Log($"Retrieved year from MetalArchives: {yearFromMetalArchives}");
-                            _logger.Log($"Retrieved year from MetalArchives: {yearFromMetalArchives}");
+                            fileLogger.Log($"Retrieved year from MetalArchives: {yearFromMetalArchives}");
 #pragma warning disable CS8601 // Possible null reference assignment.
                             folderInfo.Year = yearFromMetalArchives;
 #pragma warning restore CS8601 // Possible null reference assignment.
@@ -334,7 +334,7 @@ namespace musicParser.Processes.FilesProcess
                         else
                         {
                             Log($"Couldn't find this album year: \"{folder.Name}\"");
-                            _logger.LogError($"Couldn't find this album year: \"{folder.Name}\"");
+                            fileLogger.LogError($"Couldn't find this album year: \"{folder.Name}\"");
                         }
                     }
                 }
@@ -369,7 +369,7 @@ namespace musicParser.Processes.FilesProcess
                 if (folder.Name != expectedFormatFolderName)
                 {
                     Log($"Renaming folder to {expectedFormatFolderName}");
-                    _logger.Log($"Renaming folder to {expectedFormatFolderName}");
+                    fileLogger.Log($"Renaming folder to {expectedFormatFolderName}");
                     Microsoft.VisualBasic.FileIO.FileSystem.RenameDirectory(folder.FullName, expectedFormatFolderName);
                 }
 
@@ -379,7 +379,7 @@ namespace musicParser.Processes.FilesProcess
             {
                 Log($"Something went terribly wrong trying to Rename Folder" +
                     $"\nFolder: {folder.FullName}\nFolderInfo: {folderInfo}", LogType.Error);
-                _logger.LogError($"Something went terribly wrong trying to Rename Folder" +
+                fileLogger.LogError($"Something went terribly wrong trying to Rename Folder" +
                     $"\nFolder: {folder.FullName}\nFolderInfo: {folderInfo}");
                 throw;
             }

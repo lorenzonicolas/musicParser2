@@ -9,7 +9,7 @@ using System.IO.Abstractions;
 
 namespace musicParser.Processes
 {
-    public class LifecycleProcess : ILifecycleProcess
+    public class Lifecycle : ILifecycle
     {
         private readonly string ERROR_DIR;
         private readonly string MANUAL_FIX_DIR;
@@ -22,11 +22,11 @@ namespace musicParser.Processes
         private readonly INewAlbumsInfoProcess newAlbumsProcessor;
         private readonly IFileSystem fs;
         private readonly ITagProcess tagProcessor;
-        private readonly IExecutionLogger loggerInstance;
+        private readonly IExecutionLogger fileLogger;
         private readonly IConsoleLogger ConsoleLogger;
         private readonly IFileSystemUtils FileSystemUtils;
 
-        public LifecycleProcess(
+        public Lifecycle(
             IExecutionLogger logger,
             IConsoleLogger consoleLogger,
             IFileSystemUtils fsUtils,
@@ -37,7 +37,7 @@ namespace musicParser.Processes
             IFileSystem FS,
             IConfiguration config)
         {
-            loggerInstance = logger;
+            fileLogger = logger;
             ConsoleLogger = consoleLogger;
             FileSystemUtils = fsUtils;
             tagProcessor = TagProcessor;
@@ -68,11 +68,17 @@ namespace musicParser.Processes
                     continue;
                 }
 
+                if(!FileSystemUtils.IsAlbumFolder(folder))
+                {
+                    ConsoleLogger.Log("Not an album folder", LogType.Warning);
+                    continue;
+                }
+
                 var parsedFolder = folder.FullName;
 
                 try
                 {
-                    loggerInstance.StartExecutionLog();
+                    fileLogger.StartExecutionLog();
                     ConsoleLogger.Log($"\nLIFECYCLE - Processing folder: {folder.FullName}\n", LogType.Information);
 
                     // Rename folder processing: parse file folder name to expected format
@@ -81,7 +87,7 @@ namespace musicParser.Processes
                     if (parsedFolder.Contains(MANUAL_FIX_DIR))
                     {
                         // This folder was moved to manual fix queue. Finish here the lifecycle for this folder.
-                        loggerInstance.ExportLogFile(parsedFolder ?? folderToProcess, generateLogOnOK);
+                        fileLogger.ExportLogFile(parsedFolder ?? folderToProcess, generateLogOnOK);
                         continue;
                     }
 
@@ -91,7 +97,7 @@ namespace musicParser.Processes
                     if (parsedFolder.Contains(MANUAL_FIX_DIR))
                     {
                         // This folder was moved to manual fix queue. Finish here the lifecycle for this folder.
-                        loggerInstance.ExportLogFile(parsedFolder ?? folderToProcess, generateLogOnOK);
+                        fileLogger.ExportLogFile(parsedFolder ?? folderToProcess, generateLogOnOK);
                         continue;
                     }
 
@@ -111,15 +117,13 @@ namespace musicParser.Processes
                         ConsoleLogger.Log("Moved to TAG_FIX", LogType.Warning);
                     }
 
-                    loggerInstance.ExportLogFile(parsedFolder ?? folderToProcess, generateLogOnOK);
-
-                    ConsoleLogger.Log($"\nLIFECYCLE - End Processing folder: {parsedFolder}\n", LogType.Information);
+                    fileLogger.ExportLogFile(parsedFolder ?? folderToProcess, generateLogOnOK);
                 }
                 catch (Exception ex)
                 {
-                    loggerInstance.LogError("Folder processing terminated because of error: " + ex.Message);
+                    fileLogger.LogError("Folder processing terminated because of error: " + ex.Message);
                     ConsoleLogger.Log("Folder processing terminated because of error: " + ex.Message, LogType.Error);
-                    loggerInstance.ExportLogFile(parsedFolder);
+                    fileLogger.ExportLogFile(parsedFolder);
 
                     var shouldMove = new List<string> { MANUAL_FIX_DIR, TAG_DIR, WORKING_DIR }.Any(x=>parsedFolder.Contains(x));
 
@@ -133,10 +137,10 @@ namespace musicParser.Processes
                     }
 
                     ConsoleLogger.Log("Moved to ERROR_DIR", LogType.Error);
-
-                    ConsoleLogger.Log($"\nLIFECYCLE - End Processing folder: {parsedFolder}\n", LogType.Information);
                     continue;
                 }
+
+                ConsoleLogger.Log($"\nLIFECYCLE - End Processing folder: {parsedFolder}\n", LogType.Information);
             }
         }
     }
