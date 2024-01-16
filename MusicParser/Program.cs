@@ -24,52 +24,69 @@ namespace musicParser
     {
         public static IConfigurationRoot Configuration { get; private set; }
 
+        public static IHost host;
+
         static async Task Main(string[] args)
         {
+            var arguments = new List<string>(args);
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             Console.InputEncoding = System.Text.Encoding.Unicode;
+            
+            // Build the host with common services
+            var hostBuilder = CreateHostBuilder(args);
 
-            using IHost host = CreateHostBuilder(args).Build();
-
-            //await host.RunAsync();
-
-            var folderToProcess = Configuration.GetValue<string>("folderToProcess");
-            var folderToProcessTags = Configuration.GetValue<string>("tag_fix_dir");
-            var generateLogOnOK = Configuration.GetValue<bool>("generateLogOnOK");
-
-            var arguments = new List<string>(args);
-
-            try
+            if(arguments.Contains("service"))
             {
-                if (arguments.Contains("printTracklist"))
+                hostBuilder.ConfigureServices((services) =>
                 {
-                    ActivatorUtilities.CreateInstance<PrintTracklistProcess>(host.Services).Execute();
-                }
-                else if (arguments.Contains("tagFix"))
-                {
-                    ActivatorUtilities.CreateInstance<TagFixesLifecycle>(host.Services).Execute(folderToProcessTags, generateLogOnOK);
-                }
-                else if (arguments.Contains("countryFix"))
-                {
-                    ActivatorUtilities.CreateInstance<CountryFixesLifecycle>(host.Services).Execute().GetAwaiter().GetResult();
-                }
-                else if (arguments.Contains("resync"))
-                {
-                    ActivatorUtilities.CreateInstance<SyncLifecycle>(host.Services).Execute(folderToProcess);
-                }
-                else if (arguments.Contains("downloadAlbumCover"))
-                {
-                    await ActivatorUtilities.CreateInstance<DownloadAlbumCoverProcess>(host.Services).Execute();
-                }
-                else
-                {
-                    ActivatorUtilities.CreateInstance<LifecycleProcess>(host.Services).Execute(folderToProcess, generateLogOnOK);
-                }
+                    services.AddHostedService(x => new TimedHostedService());
+                });
             }
-            catch (Exception ex)
+            
+            using(host = hostBuilder.Build())
             {
-                Console.WriteLine($"Unhandled exception happened: {ex}");
-                throw;
+                var folderToProcess = Configuration.GetValue<string>("folderToProcess");
+                var folderToProcessTags = Configuration.GetValue<string>("tag_fix_dir");
+                var generateLogOnOK = Configuration.GetValue<bool>("generateLogOnOK");
+
+                // Depending on the input parameter the app might run as a one-time normal console app or as a service
+                try
+                {
+                    if (arguments.Contains("printTracklist"))
+                    {
+                        ActivatorUtilities.CreateInstance<PrintTracklistProcess>(host.Services).Execute();
+                    }
+                    else if (arguments.Contains("tagFix"))
+                    {
+                        ActivatorUtilities.CreateInstance<TagFixesLifecycle>(host.Services).Execute(folderToProcessTags, generateLogOnOK);
+                    }
+                    else if (arguments.Contains("countryFix"))
+                    {
+                        ActivatorUtilities.CreateInstance<CountryFixesLifecycle>(host.Services).Execute().GetAwaiter().GetResult();
+                    }
+                    else if (arguments.Contains("resync"))
+                    {
+                        ActivatorUtilities.CreateInstance<SyncLifecycle>(host.Services).Execute(folderToProcess);
+                    }
+                    else if (arguments.Contains("downloadAlbumCover"))
+                    {
+                        await ActivatorUtilities.CreateInstance<DownloadAlbumCoverProcess>(host.Services).Execute();
+                    }
+                    else if (arguments.Contains("service"))
+                    {
+                        // run as service
+                        host.Run();
+                    }
+                    else
+                    {
+                        ActivatorUtilities.CreateInstance<Lifecycle>(host.Services).Execute(folderToProcess, generateLogOnOK);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Unhandled exception happened: {ex}");
+                    throw;
+                }
             }
         }
 
@@ -86,7 +103,6 @@ namespace musicParser
             })
             .ConfigureServices((services) =>
             {
-                services.AddHostedService<MusicParser.ConsoleService>();
                 services.AddSingleton<IHttpClient, MusicParser.Utils.HttpClient.HttpClient>();
                 services.AddSingleton<IConsoleLogger, ConsoleLogger>();
                 services.AddSingleton<IExecutionLogger, ExecutionLogger>();
@@ -107,7 +123,7 @@ namespace musicParser
                 services.AddSingleton<INewAlbumsInfoProcess, NewAlbumsInfoProcess>();
                 services.AddSingleton<ITagProcess, TagsProcess>();
                 services.AddSingleton<ITagsFixProcess, TagsFixProcess>();
-                services.AddSingleton<ILifecycleProcess, LifecycleProcess>();
+                services.AddSingleton<ILifecycle, Lifecycle>();
                 services.AddSingleton<ICountryFixesProcess, CountryFixesProcess>();
                 services.AddSingleton<IPrintTracklist, PrintTracklistProcess>();
             });
