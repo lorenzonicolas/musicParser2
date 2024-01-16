@@ -42,13 +42,13 @@ https://www.howtogeek.com/devops/how-to-run-mongodb-in-a-docker-container/
 [X] Unit tests
 [X] Que la MetalArchives API corra en docker en vez de local
 [X] Que la MongoDB corra en docker en vez de local
+[ ] Healthcheck para de una detectar que las apis estén levantadas (Spotify y MetalArchives)
 [ ] Que con un solo comando levante ambas imagenes y este todo corriendo (docker compose?)
 [ ] Sonar-Cube gratuito para análisis de code smells y errores
 [ ] Comentar en el PR el resultado del análisis de SonarCube
 [X] Pipeline que buildee / corra unit tests en cada PR o commit / push
 [X] Pipeline con un threshold de % de cobertura de UT - que falle el PR si no se cumple
 [ ] Mejorar como se buildea la aplicacion en base a los argumentos
-[ ] Healthcheck para de una detectar que las apis estén levantadas (Spotify y MetalArchives)
 
 ## Errores
 - Que no updatee el backupfile en cada nuevo disco detectado y que lo haga una sola vez

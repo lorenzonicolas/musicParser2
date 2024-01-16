@@ -14,7 +14,7 @@ namespace musicParser.Processes.FilesProcess
     public class ParseFileProcess : IParseFileProcess
     {
         private readonly IMetalArchivesService metalArchivesService;
-        private readonly IExecutionLogger _logger;
+        private readonly IExecutionLogger fileLogger;
         private readonly ISpotifyService spotifyService;
         private readonly IFileSystemUtils FileSystemUtils;
         private readonly IRegexUtils RegexUtils;
@@ -35,7 +35,7 @@ namespace musicParser.Processes.FilesProcess
             IConfiguration config)
         {
             metalArchivesService = service;
-            _logger = logger;
+            fileLogger = logger;
             spotifyService = spotify;
             FileSystemUtils = fileSystemUtils;
             RegexUtils = regexUtils;
@@ -114,14 +114,14 @@ namespace musicParser.Processes.FilesProcess
                 {
                     // Something handleable went wrong. Move to manual fix queue.
                     Log($"Moving to Manual Fix queue from ParseFiles.", LogType.Error);
-                    _logger.Log($"Moving to Manual Fix queue from ParseFiles:\n\tfolderImageSuccess: {folderImageSuccess}\n\tsongsSucess: {songsSuccess}");
+                    fileLogger.Log($"Moving to Manual Fix queue from ParseFiles:\n\tfolderImageSuccess: {folderImageSuccess}\n\tsongsSucess: {songsSuccess}");
                     return FileSystemUtils.MoveProcessedFolder(cdFolder.FullName, MANUAL_FIX_DIR);
                 }
             }
             catch (Exception ex)
             {
                 Log($"ParseFiles Process Error. Folder: {cdFolder.FullName} \nErr msg: {ex.Message}", LogType.Error);
-                _logger.LogError($"ParseFiles Process Error. Folder: {cdFolder.FullName} \nErr msg: {ex.Message}");
+                fileLogger.LogError($"ParseFiles Process Error. Folder: {cdFolder.FullName} \nErr msg: {ex.Message}");
                 throw;
             }
 
@@ -147,7 +147,7 @@ namespace musicParser.Processes.FilesProcess
                     {
                         albumCover.MoveTo(string.Format("{0}\\FRONT.jpg", cdFolder.FullName));
                         Log($"Renamed image {albumCover.Name} in folder {cdFolder.Name}");
-                        _logger.Log($"Renamed image {albumCover.Name} in folder {cdFolder.Name}");
+                        fileLogger.Log($"Renamed image {albumCover.Name} in folder {cdFolder.Name}");
                     }
                     return true;
                 }
@@ -159,7 +159,7 @@ namespace musicParser.Processes.FilesProcess
             catch (Exception ex)
             {
                 Log($"Error processing folder image. Ex: {ex.Message}\nCD: {cdFolder.Name}", LogType.Error);
-                _logger.LogError($"Error processing folder image. Ex: {ex.Message}\nCD: {cdFolder.Name}");
+                fileLogger.LogError($"Error processing folder image. Ex: {ex.Message}\nCD: {cdFolder.Name}");
                 return false;
             }
         }
@@ -184,7 +184,7 @@ namespace musicParser.Processes.FilesProcess
 
             if (imageTagBytes != null)
             {
-                _logger.Log($"Retrieved cover image from tags. Folder: {cdFolder.Name}");
+                fileLogger.Log($"Retrieved cover image from tags. Folder: {cdFolder.Name}");
                 FileSystemUtils.SaveImageFile(cdFolder, imageTagBytes);
                 found = true;
             }
@@ -197,7 +197,7 @@ namespace musicParser.Processes.FilesProcess
                 imageTagBytes = spotifyService.DownloadAlbumCover(bandName, albumName);
                 if (imageTagBytes != null)
                 {
-                    _logger.Log($"Retrieved cover image from Spotify. Folder: {cdFolder.Name}");
+                    fileLogger.Log($"Retrieved cover image from Spotify. Folder: {cdFolder.Name}");
                     FileSystemUtils.SaveImageFile(cdFolder, imageTagBytes);
                     found = true;
                 }
@@ -209,13 +209,13 @@ namespace musicParser.Processes.FilesProcess
 
                     if (imageTagBytes != null)
                     {
-                        _logger.Log($"Retrieved cover image from MetalArchives. Folder: {cdFolder.Name}");
+                        fileLogger.Log($"Retrieved cover image from MetalArchives. Folder: {cdFolder.Name}");
                         FileSystemUtils.SaveImageFile(cdFolder, imageTagBytes);
                         found = true;
                     }
                     else
                     {
-                        _logger.LogError($"Couldn't retrieve any album image from internet. Folder: {cdFolder.Name}");
+                        fileLogger.LogError($"Couldn't retrieve any album image from internet. Folder: {cdFolder.Name}");
                     }
                 }
             }
@@ -248,7 +248,7 @@ namespace musicParser.Processes.FilesProcess
                 {
                     var message = $"Couldn't match any valid file name: {file.FullName}. Will try to get it from tags.";
                     Log(message, LogType.Information);
-                    _logger.Log(message);
+                    fileLogger.Log(message);
 
                     var songInfo = TagsUtils.GetFileInformation(file);
                     
@@ -271,7 +271,7 @@ namespace musicParser.Processes.FilesProcess
                 catch (Exception ex)
                 {
                     Log("There was an error trying to rename this song\nFile: " + file.FullName, LogType.Error);
-                    _logger.LogError($"Error renaming song file: {file.FullName}\nEx: {ex.Message}");
+                    fileLogger.LogError($"Error renaming song file: {file.FullName}\nEx: {ex.Message}");
                     success = false;
                     continue;
                 }
@@ -294,7 +294,7 @@ namespace musicParser.Processes.FilesProcess
 
             file.MoveTo(destinationPath);
 
-            _logger.Log($"Renamed song file: {correctFileFormat}");
+            fileLogger.Log($"Renamed song file: {correctFileFormat}");
         }
 
         private void Log(string message, LogType logType = LogType.Process)

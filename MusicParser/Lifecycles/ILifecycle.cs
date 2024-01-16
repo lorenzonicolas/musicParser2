@@ -1,6 +1,6 @@
 ﻿namespace musicParser.Processes
 {
-    public interface ILifecycleProcess
+    public interface ILifecycle
     {
         void Execute(string folderToProcess, bool generateLogOnOK);
     }
