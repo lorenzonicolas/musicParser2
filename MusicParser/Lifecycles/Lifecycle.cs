@@ -56,8 +56,19 @@ namespace musicParser.Processes
         public void Execute(string folderToProcess, bool generateLogOnOK)
         {
             ConsoleLogger.Log("\t\tLIFECYCLE\n\n");
-            
-            var inputFolders = fs.DirectoryInfo.New(folderToProcess).GetDirectories();
+            var folderToProcessDirectory = fs.DirectoryInfo.New(folderToProcess);
+            List<IDirectoryInfo> inputFolders;
+
+            // If the received folder to process is directly an album folder process it
+            if(FileSystemUtils.IsAlbumFolder(folderToProcessDirectory))
+            {
+                inputFolders = new List<IDirectoryInfo>(){folderToProcessDirectory};
+            }
+            else
+            {
+                // the folder to process may contain multiple albums even bands
+                inputFolders = folderToProcessDirectory.GetDirectories().ToList();
+            }
 
             foreach (var folder in inputFolders)
             {
