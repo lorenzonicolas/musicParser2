@@ -1,5 +1,8 @@
 # MusicParser
 
+### Configuración
+ - Configurar un repositorio local de nuget: `dotnet nuget add source D:\Repositorios\packages --name "Local"`
+
 ### Como ejecutar
 *Sin ningun parametro*: corre el lifecycle.
 
