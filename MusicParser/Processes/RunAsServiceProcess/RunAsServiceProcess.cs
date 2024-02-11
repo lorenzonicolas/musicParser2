@@ -43,6 +43,7 @@ namespace musicParser.Processes
         {
             Console.WriteLine($"Created: {e.FullPath}");
 
+            // Execute lifecycle for the notified created folder
             lifecycle.Execute(e.FullPath, generateLogOnOK);
         }
 
