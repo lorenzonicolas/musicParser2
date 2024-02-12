@@ -1,5 +1,5 @@
 # MusicParser
-
+[![Build](https://github.com/lorenzonicolas/musicParser2/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/lorenzonicolas/musicParser2/actions/workflows/build.yml)
 ## Como ejecutar
 *Sin ningun parametro*: corre el lifecycle.
 
