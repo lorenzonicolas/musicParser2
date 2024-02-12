@@ -1,12 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Net;
+using DTO;
+using Microsoft.Extensions.Configuration;
 using Moq;
-using musicParser.DTO;
 using musicParser.Spotify;
 using musicParser.Spotify.DTOs;
-using musicParser.Utils.Regex;
 using MusicParser.Utils.HttpClient;
 using Newtonsoft.Json;
-using System.Net;
+using Regex;
 
 namespace MusicParser.Tests.SpotifyAPI
 {
@@ -193,8 +193,8 @@ namespace MusicParser.Tests.SpotifyAPI
                 Albums = new AlbumSearchDTO()
                 {
                     Total = 1,
-                    Items = new List<AlbumDTO>()
-                    {
+                    Items =
+                    [
                         new AlbumDTO()
                         {
                             Artists = new List<BandDTO>(){ bandDto },
@@ -203,7 +203,7 @@ namespace MusicParser.Tests.SpotifyAPI
                             ReleaseDate = DateTime.Now.AddMonths(-10).ToShortDateString(),
                             AlbumType = AlbumType.FullAlbum.ToString()
                         }
-                    }
+                    ]
                 }
             };
             
